@@ -13,6 +13,43 @@ namespace gnb_du
 namespace rcfd
 {
 
+typedef struct structDst
+{
+    IpVersionE ip_version; 
+    std::string ipv4_addr; 
+    std::string ipv6_addr; 
+    uint32_t port; 
+} Dst; 
+
+typedef struct structSrc
+{
+    IpVersionE ip_version; 
+    std::string ipv4_addr; 
+    std::string ipv6_addr; 
+    uint32_t port; 
+} Src; 
+
+typedef struct structCfgparams
+{
+    uint16_t num_outbound_streams; 
+    uint16_t max_inbound_streams; 
+    uint16_t max_init_attempts; 
+    uint16_t hb_interval; 
+    uint16_t max_path_retx; 
+} CfgParams; 
+
+typedef struct structDumodules
+{
+    DuModuleIdE module_id; 
+    LogLvlE log_lvl; 
+} DuModules; 
+
+typedef struct structNgpmodules
+{
+    NgpModuleIdE module_id; 
+    LogLvlE log_lvl; 
+} NgpModules; 
+
 typedef struct structDrx
 {
     uint32_t inactivity_tmr; 
@@ -37,27 +74,6 @@ typedef struct structLog
     std::vector<std::shared_ptr<NgpModule>> ngp_modules;
 } Log;
 
-typedef struct structDst
-{
-    IpAddr ip_addr;
-    uint32_t port; 
-} Dst; 
-
-typedef struct structSrc
-{
-    IpAddr ip_addr;
-    uint32_t port; 
-} Src; 
-
-typedef struct structCfgParams
-{
-    uint16_t num_outbound_streams; 
-    uint16_t max_inbound_streams; 
-    uint16_t max_init_attempts; 
-    uint16_t hb_interval; 
-    uint16_t max_path_retx; 
-} CfgParams; 
-
 typedef struct structUe
 {
     uint16_t max_ue_supported; 
@@ -81,18 +97,6 @@ typedef struct structF1UFlowCtrl
     bool en_nrup_missing_rept; 
     uint32_t read_ingress_pkts_per_tti; 
 } F1UFlowCtrl; 
-
-typedef struct structDumodules
-{
-    DuModuleIdE module_id; 
-    LogLvlE log_lvl; 
-} DuModules; 
-
-typedef struct structNgpmodules
-{
-    NgpModuleIdE module_id; 
-    LogLvlE log_lvl; 
-} NgpModules; 
 
 class oam_agent_rcfd_du_base : public allocator
 {

@@ -123,14 +123,24 @@ void oam_agent_rcfd_du_base::read_grp_log(XCONFD_YANGTREE_T* yt, Log& log)
 
 void oam_agent_rcfd_du_base::read_grp_log__du_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<DuModules>>& du_modules)
 {
-    xconfd_get(du_modules.module_id, enum, "module-id", yt);
-    xconfd_get(du_modules.log_lvl, enum, "log-lvl", yt);
+    XCONFD_YANG_TREE_LIST_FOREACH(yt, du_modules_yt)
+    {
+        auto du_module = std::make_shared<DuModules>();
+        xconfd_get(du_module.module_id, enum, "module-id", yt);
+        xconfd_get(du_module.log_lvl, enum, "log-lvl", yt);
+        du_modules.push_back(du_module);
+    }
 }
 
 void oam_agent_rcfd_du_base::read_grp_log__ngp_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<NgpModules>>& ngp_modules)
 {
-    xconfd_get(ngp_modules.module_id, enum, "module-id", yt);
-    xconfd_get(ngp_modules.log_lvl, enum, "log-lvl", yt);
+    XCONFD_YANG_TREE_LIST_FOREACH(yt, ngp_modules_yt)
+    {
+        auto ngp_module = std::make_shared<NgpModules>();
+        xconfd_get(ngp_module.module_id, enum, "module-id", yt);
+        xconfd_get(ngp_module.log_lvl, enum, "log-lvl", yt);
+        ngp_modules.push_back(ngp_module);
+    }
 }
 
 

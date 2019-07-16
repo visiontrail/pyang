@@ -13,6 +13,47 @@ namespace gnb_du
 namespace rcfd
 {
 
+typedef struct structPlmnidinfos
+{
+    std::vector<std::shared_ptr<PlmnId>> plmn_ids;
+    NrCellIdT nr_cell_id; 
+    uint32_t tac; 
+    uint8_t ranac; 
+    bool cell_rsrvd_for_operator_use; 
+} PlmnIdInfos; 
+
+typedef struct structPlmnids
+{
+    std::string mcc; 
+    std::string mnc; 
+} PlmnIds; 
+
+typedef struct structPdcchcfgsib1
+{
+    CoresetZeroT coreset_zero; 
+    SsZeroT ss_zero; 
+} PdcchCfgSib1; 
+
+typedef struct structCellselinfo
+{
+    QRxLvlMinT q_rx_lvl_min; 
+    uint8_t q_rx_lvl_min_offset; 
+    QRxLvlMinT q_rx_lvl_min_sul; 
+    QQualMinT q_qual_min; 
+    uint8_t q_qual_min_offset; 
+} CellSelInfo; 
+
+typedef struct structUetimers
+{
+    T300E t300; 
+    T301E t301; 
+    T310E t310; 
+    N310E n310; 
+    T311E t311; 
+    N311E n311; 
+    T319E t319; 
+} UeTimers; 
+
 typedef struct structCellAccessInfo
 {
     std::vector<std::shared_ptr<PlmnIdInfo>> plmn_id_infos;
@@ -76,27 +117,6 @@ typedef struct structPrach
     Msg1FdmE fdm; 
     SsbPerRachOccE ssb_per_rach_occ; 
 } Prach;
-
-typedef struct structPdcchCfgSib1
-{
-    CoresetZeroT coreset_zero; 
-    SsZeroT ss_zero; 
-} PdcchCfgSib1; 
-
-typedef struct structPlmnidinfos
-{
-    std::vector<std::shared_ptr<PlmnId>> plmn_ids;
-    NrCellIdT nr_cell_id; 
-    uint32_t tac; 
-    uint8_t ranac; 
-    bool cell_rsrvd_for_operator_use; 
-} PlmnIdInfos; 
-
-typedef struct structPlmnids
-{
-    std::string mcc; 
-    std::string mnc; 
-} PlmnIds; 
 
 class oam_agent_rcfd_cell_l1 : public allocator
 {

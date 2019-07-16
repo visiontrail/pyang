@@ -45,7 +45,7 @@
             "args": [
                 "-f",
                 "xtypedef",
-                "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_du/5gran/radisys-du/src/du_app/oam_agent/yang/du/certus-5gnr-du-base-info@2019-07-08.yang",
+                "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_du/5gran/radisys-du/src/du_app/oam_agent/yang/du/certus-5gnr-du-du-base@2019-07-08.yang",
                 "-p",
                 "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_du/5gran/radisys-du/src/du_app/oam_agent/yang/du",
                 "-o",

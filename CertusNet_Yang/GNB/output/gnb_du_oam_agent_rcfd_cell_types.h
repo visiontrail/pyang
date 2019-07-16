@@ -27,14 +27,14 @@ typedef enum enumT310E
     T310_MS500,
     T310_MS1000,
     T310_MS2000
-}T310E;
+} T310E;
 
 typedef enum enumRestrSetE
 {
     RESTR_UNRESTRICTED_SET,
     RESTR_TYPE_A,
     RESTR_TYPE_B
-}RestrSetE;
+} RestrSetE;
 
 typedef enum enumSsbPerRachOccE
 {
@@ -46,7 +46,7 @@ typedef enum enumSsbPerRachOccE
     SSB_FOUR,
     SSB_EIGHT,
     SSB_SIXTEEN
-}SsbPerRachOccE;
+} SsbPerRachOccE;
 
 typedef enum enumBwpInactiveTimerE
 {
@@ -81,7 +81,7 @@ typedef enum enumBwpInactiveTimerE
     BWP_SPARE3,
     BWP_SPARE2,
     BWP_SPARE1
-}BwpInactiveTimerE;
+} BwpInactiveTimerE;
 
 typedef int8_t QQualMinT;
 
@@ -95,14 +95,14 @@ typedef enum enumRaRspWinE
     RA_RSP_SL20,
     RA_RSP_SL40,
     RA_RSP_SL80
-}RaRspWinE;
+} RaRspWinE;
 
 typedef enum enumInterlvrSizeE
 {
-    BNDL_N2,
-    BNDL_N3,
-    BNDL_N6
-}InterlvrSizeE;
+    INTERLVR_N2,
+    INTERLVR_N3,
+    INTERLVR_N6
+} InterlvrSizeE;
 
 typedef enum enumMsgPowerOffsetGrpBE
 {
@@ -114,19 +114,19 @@ typedef enum enumMsgPowerOffsetGrpBE
     OFFSET_DB12,
     OFFSET_DB15,
     OFFSET_DB18
-}MsgPowerOffsetGrpBE;
+} MsgPowerOffsetGrpBE;
 
 typedef enum enumHarqAckCbTypeE
 {
     CB_SS,
     CB_DYN
-}HarqAckCbTypeE;
+} HarqAckCbTypeE;
 
 typedef enum enumPrachRootSeqIdxTypeE
 {
     SEQ_L839,
     SEQ_L139
-}PrachRootSeqIdxTypeE;
+} PrachRootSeqIdxTypeE;
 
 typedef uint16_t OffsetPointACarrierT;
 
@@ -136,7 +136,7 @@ typedef enum enumScsCmnE
 {
     SCS15OR60,
     SCS30OR120
-}ScsCmnE;
+} ScsCmnE;
 
 typedef uint8_t SymsNumT;
 
@@ -158,7 +158,7 @@ typedef enum enumPerdBsrTimerE
     BSR_SF1280,
     BSR_SF2560,
     BSR_INFINITY
-}PerdBsrTimerE;
+} PerdBsrTimerE;
 
 typedef uint16_t NrPciT;
 
@@ -166,11 +166,11 @@ typedef uint8_t CoresetIdT;
 
 typedef enum enumOperStateE
 {
-    DEACTIVATING,
     UNACTIVATED,
+    FAILED_ACTIVATED,
     ACTIVATING,
     ACTIVATED
-}OperStateE;
+} OperStateE;
 
 typedef uint8_t SsZeroT;
 
@@ -192,7 +192,7 @@ typedef enum enumRetxBsrTimerE
     RETX_BSR_SPARE3,
     RETX_BSR_SPARE2,
     RETX_BSR_SPARE1
-}RetxBsrTimerE;
+} RetxBsrTimerE;
 
 typedef enum enumN310E
 {
@@ -204,13 +204,13 @@ typedef enum enumN310E
     N310_N8,
     N310_N10,
     N310_N20
-}N310E;
+} N310E;
 
 typedef enum enumDciFormatE
 {
     FORMATS0_0_AND_1_0,
     FORMATS0_1_AND_1_1
-}DciFormatE;
+} DciFormatE;
 
 typedef enum enumSiPerdE
 {
@@ -221,7 +221,7 @@ typedef enum enumSiPerdE
     SI_RF128,
     SI_RF256,
     SI_RF512
-}SiPerdE;
+} SiPerdE;
 
 typedef enum enumPowerRampStepE
 {
@@ -229,27 +229,27 @@ typedef enum enumPowerRampStepE
     STEP_DB2,
     STEP_DB4,
     STEP_DB6
-}PowerRampStepE;
+} PowerRampStepE;
 
 typedef enum enumPucchGrpHoppingE
 {
     HOPPING_NEITHER,
     HOPPING_ENABLE,
     HOPPING_DISABLE
-}PucchGrpHoppingE;
+} PucchGrpHoppingE;
 
 typedef enum enumAdminStateE
 {
     BLOCKED,
     UNBLOCKED
-}AdminStateE;
+} AdminStateE;
 
 typedef enum enumNsE
 {
     NS_FOUR,
     NS_TWO,
     NS_ONE
-}NsE;
+} NsE;
 
 typedef enum enumT301E
 {
@@ -261,7 +261,7 @@ typedef enum enumT301E
     T301_MS1000,
     T301_MS1500,
     T301_MS2000
-}T301E;
+} T301E;
 
 typedef enum enumSiWinLenE
 {
@@ -274,7 +274,7 @@ typedef enum enumSiWinLenE
     SI_SL320,
     SI_SL640,
     SI_SL1280
-}SiWinLenE;
+} SiWinLenE;
 
 typedef uint8_t BwpIdT;
 
@@ -292,7 +292,7 @@ typedef enum enumT319E
     T319_MS1000,
     T319_MS1500,
     T319_MS2000
-}T319E;
+} T319E;
 
 typedef enum enumPreambleTransMaxE
 {
@@ -307,7 +307,7 @@ typedef enum enumPreambleTransMaxE
     TRANS_N50,
     TRANS_N100,
     TRANS_N200
-}PreambleTransMaxE;
+} PreambleTransMaxE;
 
 typedef uint8_t SsIdT;
 
@@ -317,14 +317,14 @@ typedef enum enumMsg1FdmE
     FDM_F2,
     FDM_F4,
     FDM_F8
-}Msg1FdmE;
+} Msg1FdmE;
 
 typedef enum enumXOverheadE
 {
     XOH6,
     XOH12,
     XOH18
-}XOverheadE;
+} XOverheadE;
 
 typedef enum enumT311E
 {
@@ -335,7 +335,7 @@ typedef enum enumT311E
     T311_MS15000,
     T311_MS20000,
     T311_MS30000
-}T311E;
+} T311E;
 
 typedef uint32_t Tac5GsT;
 
@@ -349,7 +349,7 @@ typedef enum enumRaContResTmrE
     CONT_SF48,
     CONT_SF56,
     CONT_SF64
-}RaContResTmrE;
+} RaContResTmrE;
 
 typedef enum enumPagingCycleE
 {
@@ -357,14 +357,14 @@ typedef enum enumPagingCycleE
     PAGING_RF64,
     PAGING_RF128,
     PAGING_RF256
-}PagingCycleE;
+} PagingCycleE;
 
 typedef enum enumAvailStateE
 {
     UNAVAILABLE,
     DEGRADED,
     AVAILABLE
-}AvailStateE;
+} AvailStateE;
 
 typedef enum enumT300E
 {
@@ -376,7 +376,7 @@ typedef enum enumT300E
     T300_MS1000,
     T300_MS1500,
     T300_MS2000
-}T300E;
+} T300E;
 
 typedef enum enumScsE
 {
@@ -388,7 +388,7 @@ typedef enum enumScsE
     SCS_KHZ320,
     SCS_SPARE2,
     SCS_SPARE1
-}ScsE;
+} ScsE;
 
 typedef enum enumSsbScellPerdE
 {
@@ -398,7 +398,7 @@ typedef enum enumSsbScellPerdE
     SSP_MS40,
     SSP_MS80,
     SSP_MS160
-}SsbScellPerdE;
+} SsbScellPerdE;
 
 typedef uint16_t SlotsNumT;
 
@@ -412,7 +412,7 @@ typedef enum enumN311E
     N311_N6,
     N311_N8,
     N311_N10
-}N311E;
+} N311E;
 
 typedef enum enumPagingFrameOffsetTypeE
 {
@@ -421,7 +421,7 @@ typedef enum enumPagingFrameOffsetTypeE
     QUARTER_T,
     ONE_EIGHTH_T,
     ONE_SIXTEENTH_T
-}PagingFrameOffsetTypeE;
+} PagingFrameOffsetTypeE;
 
 typedef enum enumModiPerdCoeffE
 {
@@ -429,7 +429,7 @@ typedef enum enumModiPerdCoeffE
     COEFF_N4,
     COEFF_N8,
     COEFF_N16
-}ModiPerdCoeffE;
+} ModiPerdCoeffE;
 
 typedef enum enumAlignmentTimerE
 {
@@ -441,13 +441,13 @@ typedef enum enumAlignmentTimerE
     ALIGN_MS5120,
     ALIGN_MS10240,
     ALIGN_INFINITY
-}AlignmentTimerE;
+} AlignmentTimerE;
 
 typedef enum enumDmrsTypeAPosE
 {
     DMRS_POS2,
     DMRS_POS3
-}DmrsTypeAPosE;
+} DmrsTypeAPosE;
 
 typedef enum enumCandidatesNumE
 {
@@ -459,7 +459,7 @@ typedef enum enumCandidatesNumE
     CANDIDATE_N5,
     CANDIDATE_N6,
     CANDIDATE_N8
-}CandidatesNumE;
+} CandidatesNumE;
 
 typedef uint8_t SsbScOffsetT;
 
@@ -473,7 +473,7 @@ typedef enum enumTransPerdE
     TRANS_MS2P5,
     TRANS_MS5,
     TRANS_MS10
-}TransPerdE;
+} TransPerdE;
 
 typedef enum enumChannelBwE
 {
@@ -490,14 +490,14 @@ typedef enum enumChannelBwE
     BW_MHZ100,
     BW_MHZ200,
     BW_MHZ400
-}ChannelBwE;
+} ChannelBwE;
 
 typedef enum enumRegBndlSizeE
 {
     BNDL_N2,
     BNDL_N3,
     BNDL_N6
-}RegBndlSizeE;
+} RegBndlSizeE;
 
 typedef enum enumMonSlotPerdOffsetTypeE
 {
@@ -516,13 +516,13 @@ typedef enum enumMonSlotPerdOffsetTypeE
     SPO_SL640,
     SPO_SL1280,
     SPO_SL2560
-}MonSlotPerdOffsetTypeE;
+} MonSlotPerdOffsetTypeE;
 
 typedef enum enumNrModeTypeE
 {
     NR_FDD,
     NR_TDD
-}NrModeTypeE;
+} NrModeTypeE;
 
 typedef uint64_t NrCellIdT;
 
@@ -532,7 +532,7 @@ typedef enum enumPrecoderGranularityE
 {
     SAME_AS_REG_BUNDLE,
     ALL_CONTIGUOUS_RBS
-}PrecoderGranularityE;
+} PrecoderGranularityE;
 
 typedef enum enumPdschHarqProcessesNumE
 {
@@ -542,7 +542,7 @@ typedef enum enumPdschHarqProcessesNumE
     HARQ_PROC_N10,
     HARQ_PROC_N12,
     HARQ_PROC_N16
-}PdschHarqProcessesNumE;
+} PdschHarqProcessesNumE;
 
 typedef uint8_t TciStateIdT;
 
@@ -554,7 +554,7 @@ typedef enum enumMaxCbgsPerTbE
     CBGS_N4,
     CBGS_N6,
     CBGS_N8
-}MaxCbgsPerTbE;
+} MaxCbgsPerTbE;
 
 typedef enum enumRaMsg3SizeGrpAE
 {
@@ -574,7 +574,7 @@ typedef enum enumRaMsg3SizeGrpAE
     RA_SPARE3,
     RA_SPARE2,
     RA_SPARE1
-}RaMsg3SizeGrpAE;
+} RaMsg3SizeGrpAE;
 
 typedef uint32_t SdT;
 
@@ -582,16 +582,15 @@ typedef enum enumTransPerdV1530E
 {
     TRANS_MS3_V1530,
     TRANS_MS4_V1530
-}TransPerdV1530E;
+} TransPerdV1530E;
 
 typedef struct structPlmnId
 {
     std::string mcc; 
     std::string mnc; 
-}PlmnId;
+} PlmnId;
 void read_grp_plmn_id(XCONFD_YANGTREE_T* yt, PlmnId& plmn_id)
 {
-
     xconfd_get(plmn_id.mcc, string, "mcc", yt);
     xconfd_get(plmn_id.mnc, string, "mnc", yt);
 }

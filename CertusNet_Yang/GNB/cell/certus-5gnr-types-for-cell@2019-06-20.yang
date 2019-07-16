@@ -18,8 +18,8 @@ module certus-5gnr-types-for-cell {
     
     typedef oper-state-e {
         type enumeration {
-            enum DEACTIVATING;
             enum UNACTIVATED;
+            enum FAILED-ACTIVATED;
             enum ACTIVATING;
             enum ACTIVATED;
         }
@@ -332,9 +332,9 @@ module certus-5gnr-types-for-cell {
     
     typedef interlvr-size-e {
         type enumeration {
-            enum BNDL-N2;
-            enum BNDL-N3;
-            enum BNDL-N6;
+            enum INTERLVR-N2;
+            enum INTERLVR-N3;
+            enum INTERLVR-N6;
         }
         description "Interleaver Size";
     }

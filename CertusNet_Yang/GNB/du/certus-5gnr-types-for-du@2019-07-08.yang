@@ -27,42 +27,42 @@ module certus-5gnr-types-for-du {
     typedef du-module-id-e {
         type enumeration {
             enum DU-NS-AGENT;
-            enum OAM-AGENT;
+            enum DU-OAM-AGENT;
             enum DU-MGR;
             enum DU-RRM;
-            enum APP-UE;
-            enum F1AP;
-            enum SCTP;
-            enum EGTPU;
-            enum UDP;
-            enum NRUP;
-            enum RRC-CODEC;
-            enum COMMON-CODEC;
-            enum COMMON;
-            enum FAST-PKT;
+            enum DU-APP-UE;
+            enum DU-F1AP;
+            enum DU-SCTP;
+            enum DU-EGTPU;
+            enum DU-UDP;
+            enum DU-NRUP;
+            enum DU-RRC-CODEC;
+            enum DU-COMMON-CODEC;
+            enum DU-COMMON;
+            enum DU-FAST-PKT;
         }
     }
     typedef ngp-module-id-e {
         type enumeration {
             enum NGP { description 0xFFFF0000; }
-            enum MEM { description 0x1000; }
-            enum BUF { description 0x1001; }
-            enum STATS { description 0x1002; }
-            enum TIMER { description 0x1003; }
-            enum STHREAD { description 0x1004; }
-            enum CTHREAD { description 0x1005; }
-            enum SYS { description 0x1006; }
-            enum EXCP { description 0x1007; }
-            enum COMM { description 0x1008; }
-            enum SCTP { description 0x1009; }
-            enum UDP { description 0x100A; }
-            enum TCP { description 0x100B; }
-            enum MSGQ { description 0x100C; }
-            enum PRIOQ { description 0x100D; }
-            enum WORKQ { description 0x100E; }
-            enum PERF { description 0x100F; }
-            enum HTTP2 { description 0x1010; }
-            enum THR_POOL { description 0x1011; }
+            enum NGP-MEM { description 0x1000; }
+            enum NGP-BUF { description 0x1001; }
+            enum NGP-STATS { description 0x1002; }
+            enum NGP-TIMER { description 0x1003; }
+            enum NGP-STHREAD { description 0x1004; }
+            enum NGP-CTHREAD { description 0x1005; }
+            enum NGP-SYS { description 0x1006; }
+            enum NGP-EXCP { description 0x1007; }
+            enum NGP-COMM { description 0x1008; }
+            enum NGP-SCTP { description 0x1009; }
+            enum NGP-UDP { description 0x100A; }
+            enum NGP-TCP { description 0x100B; }
+            enum NGP-MSGQ { description 0x100C; }
+            enum NGP-PRIOQ { description 0x100D; }
+            enum NGP-WORKQ { description 0x100E; }
+            enum NGP-PERF { description 0x100F; }
+            enum NGP-HTTP2 { description 0x1010; }
+            enum NGP-THR_POOL { description 0x1011; }
         }
     }
     typedef log-lvl-e {
