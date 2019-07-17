@@ -149,17 +149,7 @@ def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
             line = "    xconfd_yang_tree_get_leaf_list(" + group.arg.replace('-','_') + "->" + cppch.arg.replace('-','_') + \
                     ", " + refine_type_name_cpp(get_typename(cppch)) + ", " + "\"" + cppch.arg + "\"" + ", yt);\n"
             fdtd.write(line)
-        # elif cppch.keyword == "container" and judge_if_uses_state(s) == 4:
-        #     ytname = cppch.arg.replace('-','_') + "_yt"
-        #     line = "    auto " + ytname + " = " + "xconfd_yang_tree_get_node" + "(yt, \"" + \
-        #         cppch.arg + "\");\n"
-        #     line += "    read_grp_" + group.arg.replace('-', '_') + "__" + cppch.arg.replace('-','_') + "(" + \
-        #         ytname + ", " + (group.arg.replace('-', '_')) + "." + cppch.arg.replace('-','_') + ");\n"
-        #     fdtd.write(line)
-        # elif cppch.keyword == "list" and judge_if_uses_state(cppch) == 1:
-        #     line = "    read_grp_" + group.arg.replace('-','_') + "__" + cppch.arg.replace('-','_') + \
-        #         "(yt, " + group.arg.replace('-','_') + "." + cppch.arg.replace('-','_') + ");\n"
-        #     fdtd.write(line)
+
         else:
             print("err_ptr_groupfunc:" + str(cppch))
     
@@ -172,58 +162,38 @@ all_grouping = {} # 所有在typedef文件中的grouping
 # fd: 输出文件句柄
 def emit_tree(ctx, modules, fd, depth, llen, path):
     alreadyGen = []
+    dict_Stru_ref = {}
+    dict_Stru_Cnt = {}
 
-    
-
-    # 首先将import中的typedef取出
+    # 首先将import中的typedef取出，生成对应的Typedef的头文件
     for typedefmd in ctx.modules:
         md = ctx.modules[typedefmd]
-        if md.arg == "certus-5gnr-types-for-cell" or md.arg == "certus-5gnr-types-for-du":
+        if md.arg == "certus-5gnr-types-for-cell":
+            fdtd = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_cell_types.h" ), "w")
+            fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_cell_types.h \n"
+            fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
+            fdline += "*/ \n\n"
+            fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n"
+            fdline += "#define __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n\n"
+
+            fdline += "#include <string>\n#include <vector>\n#include <map>\n#include <memory>\n"
+            fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n#include \"gnb_du_oam_comm.h\"\n\n"
+
+            fdline += "namespace gnb_du \n"
+            fdline += "{\n"
+            fdline += "namespace rcfd\n"
+            fdline += "{\n"
+
+            fdtd.write(fdline)
             
-            if md.arg == "certus-5gnr-types-for-cell":
-                fdtd = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_cell_types.h" ), "w")
-                fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_cell_types.h \n"
-                fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
-                fdline += "*/ \n\n"
-                fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n"
-                fdline += "#define __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n\n"
-
-                fdline += "#include <string>\n#include <vector>\n#include <map>\n#include <memory>\n"
-                fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n#include \"gnb_du_oam_comm.h\"\n\n"
-
-                fdline += "namespace gnb_du \n"
-                fdline += "{\n"
-                fdline += "namespace rcfd\n"
-                fdline += "{\n"
-
-                fdtd.write(fdline)
-
-            elif md.arg == "certus-5gnr-types-for-du":
-                fdtd = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_du_types.h" ), "w")
-                fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_du_types.h \n"
-                fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
-                fdline += "*/ \n\n"
-                fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n"
-                fdline += "#define __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n\n"
-
-                fdline += "#include <string>\n#include <vector>\n#include <map>\n#include <memory>\n"
-                fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n#include \"gnb_du_oam_comm.h\"\n\n"
-
-                fdline += "namespace gnb_du \n"
-                fdline += "{\n"
-                fdline += "namespace rcfd\n"
-                fdline += "{\n"
-
-                fdtd.write(fdline)
-            
-            # 查找所有typedef文件中的typedef
+            # 输出所有typedef文件中的typedef
             for tdname in md.i_typedefs:
                 typedef = md.i_typedefs[tdname]
                 print_typedef_header(fdtd, typedef)
                 if typedef.keyword == "typedef":
                     all_typedef[typedef.arg] = get_typedef_type(typedef)
 
-            # 查找所有typedef文件中的grouping
+            # 输出所有typedef文件中的grouping
             for tdname in md.i_groupings:
                 grouping = md.i_groupings[tdname]
                 if grouping.keyword == "grouping":
@@ -231,114 +201,115 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
                     all_grouping[grouping.arg] = "read_grp_" + grouping.arg.replace('-','_') + "(XCONFD_YANGTREE_T* yt, " \
                         + get_struct_name(grouping.arg) + "& "  + grouping.arg.replace('-','_') + ");\n"
             
+            # 打印Typedef头文件结尾
             fdline = "} //" + "end of namespace rcfd\n"
             fdline += "} //" + "end of namespace gnb_du\n"
             fdline += "#endif"
             fdtd.write(fdline)
 
+        elif md.arg == "certus-5gnr-types-for-du":
+            fdtd = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_du_types.h" ), "w")
+            fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_du_types.h \n"
+            fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
+            fdline += "*/ \n\n"
+            fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n"
+            fdline += "#define __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n\n"
 
+            fdline += "#include <string>\n#include <vector>\n#include <map>\n#include <memory>\n"
+            fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n#include \"gnb_du_oam_comm.h\"\n\n"
+
+            fdline += "namespace gnb_du \n"
+            fdline += "{\n"
+            fdline += "namespace rcfd\n"
+            fdline += "{\n"
+
+            fdtd.write(fdline)
+        
+            # 输出所有typedef文件中的typedef
+            for tdname in md.i_typedefs:
+                typedef = md.i_typedefs[tdname]
+                print_typedef_header(fdtd, typedef)
+                if typedef.keyword == "typedef":
+                    all_typedef[typedef.arg] = get_typedef_type(typedef)
+
+            # 输出所有typedef文件中的grouping
+            for tdname in md.i_groupings:
+                grouping = md.i_groupings[tdname]
+                if grouping.keyword == "grouping":
+                    print_typedef_header_grouping(fdtd, grouping, ctx.opts.modname_prefix)
+                    all_grouping[grouping.arg] = "read_grp_" + grouping.arg.replace('-','_') + "(XCONFD_YANGTREE_T* yt, " \
+                        + get_struct_name(grouping.arg) + "& "  + grouping.arg.replace('-','_') + ");\n"
+            
+            # 打印Typedef头文件结尾
+            fdline = "} //" + "end of namespace rcfd\n"
+            fdline += "} //" + "end of namespace gnb_du\n"
+            fdline += "#endif"
+            fdtd.write(fdline)
+
+    # 生成该submodule的头文件
     for module in modules:
         mod_name = module.arg.replace(
             'certus-5gnr-du-', 'gnb_du_oam_agent_').replace('-', '_')
         headerline = "/*\n" + " * filename: " + mod_name + ".h \n"
         headerline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
         headerline += "*/ \n\n"
-
         headerline += "#ifndef " + "__" + mod_name.upper() + "__\n"
         headerline += "#define " + "__" + mod_name.upper() + "__\n\n"
-
         judgetemp = module.arg.replace('certus-5gnr-du-', '')
         if str(judgetemp).find("cell") >= 0:
             headerline += """#include "gnb_du_oam_agent_rcfd_cell_types.h"\n\n"""
         elif str(judgetemp).find("du") >= 0:
             headerline += """#include "gnb_du_oam_agent_rcfd_du_types.h"\n\n"""
-
         headerline += "namespace gnb_du \n"
         headerline += "{\n"
         headerline += "namespace rcfd\n"
         headerline += "{\n"
-
         fd.write(headerline + "\n")
 
+        # 生成这个头文件所对应的cpp文件
         filename = module.arg.replace(
             'certus-5gnr-du-', 'gnb_du_oam_agent_rcfd_').replace('-', '_')
         fdcpp = open((get_output_filepath(fd) + "/" + filename + ".cpp" ), "w")
-
         print_cppfile_header(modules, fdcpp)
+
+        # 第一次遍历 将所有的grouping都生成typedef
+        for groupname in module.i_groupings:
+            if groupname == module.arg.replace('certus-5gnr-du-','') : continue
+            
+            chs_ctn = [ch for ch in module.i_groupings[groupname].substmts
+                        if ch.keyword in ['container', 'list', 'uses', 'leaf', 'leaf-list']]
+
+            # line = "typedef struct struct" + get_struct_name(groupname) + "\n{\n"
+            # fd.write(line)
+            print_grouping(chs_ctn, module, fd, '', "chpath", 'data', depth,
+                        dict_Stru_Cnt, dict_Stru_ref, get_struct_name(groupname),
+                        llen, ctx.opts.tree_no_expand_uses, 0, alreadyGen,
+                        prefix_with_modname=ctx.opts.modname_prefix)
+            # line = "} " + get_struct_name(groupname) + ";\n\n"
+            # fd.write(line)
+            alreadyGen.append(groupname)
+
+        # 第二遍循环 grouping下所有的container
+        for groupname in module.i_groupings:
+            chs = [ch for ch in module.i_groupings[groupname].substmts
+                   if ch.keyword in ['container'] and judge_if_uses_state(ch) > 1
+                   and ch.arg not in alreadyGen]
+
+            if len(chs) > 0:
+                print_children(chs, module, fd, '', "chpath", 'data', depth, llen,
+                               dict_Stru_Cnt, dict_Stru_ref, get_struct_name(groupname),
+                               ctx.opts.tree_no_expand_uses, 0, alreadyGen,
+                               prefix_with_modname=ctx.opts.modname_prefix)
 
         # 第三次遍历 则遍历所有节点，找出非首级的container和list
         for groupname in module.i_groupings:
             chs_ctn = [ch for ch in module.i_groupings[groupname].i_children
-                       if ch.keyword in ['container', 'leaf', 'leaf-list', 'choice', 'anyxml', 'anydata', 'uses', 'augment']]
-
-            if path is not None and len(path) > 0:
-                chs_ctn = [ch for ch in chs_ctn if ch.arg == path[0]]
-                chpath = path[1:]
-            else:
-                chpath = path
+                       if ch.keyword in ['container']]
 
             if len(chs_ctn) > 0:
-                print_children2(chs_ctn, module, fd, '', chpath, 'data', depth, llen,
+                print_children2(chs_ctn, module, fd, '', "chpath", 'data', depth, llen,
                                 ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                                 prefix_with_modname=ctx.opts.modname_prefix)
-
-        # 第一次遍历 将所有的grouping都生成typedef
-        for groupname in module.i_groupings:
-
-            if groupname == module.arg.replace('certus-5gnr-du-',''):
-                continue
-
-            # 收集这个grouping下是否有直接使用uess的节点
-            grpch = [ch for ch in module.i_groupings[groupname].substmts
-                    if ch.keyword in ['uses']]
-            
-            if len(grpch) == 0:
-                chs_ctn = [ch for ch in module.i_groupings[groupname].i_children
-                        if ch.keyword in statements.mem_definition_keywords]
-                if path is not None and len(path) > 0:
-                    chs_ctn = [ch for ch in chs_ctn if ch.arg == path[0]]
-                    chpath = path[1:]
-                else:
-                    chpath = path
-
-                if len(chs_ctn) > 0:
-                    line = "typedef struct struct" + \
-                        get_struct_name(groupname) + "\n{\n"
-                    fd.write(line)
-                    print_grouping(chs_ctn, module, fd, '', chpath, 'data', depth, llen,
-                                ctx.opts.tree_no_expand_uses, 0, alreadyGen,
-                                prefix_with_modname=ctx.opts.modname_prefix)
-                    line = "} " + get_struct_name(groupname) + ";\n\n"
-                    fd.write(line)
-                    alreadyGen.append(groupname)
-            else:
-                chs_ctn = [ch for ch in module.i_groupings[groupname].substmts
-                            if ch.keyword in ['container', 'list', 'uses', 'leaf', 'leaf-list']]
-                line = "typedef struct struct" + \
-                    get_struct_name(groupname) + "\n{\n"
-                fd.write(line)
-                print_grouping(chs_ctn, module, fd, '', chpath, 'data', depth, llen,
-                            ctx.opts.tree_no_expand_uses, 0, alreadyGen,
-                            prefix_with_modname=ctx.opts.modname_prefix)
-                line = "} " + get_struct_name(groupname) + ";\n\n"
-                fd.write(line)
-                alreadyGen.append(groupname)
-
-        # 第二遍循环 输出所有首级container和list的typedef
-        for groupname in module.i_groupings:
-            chs = [ch for ch in module.i_groupings[groupname].i_children
-                   if ch.keyword in ['container', 'uses']
-                   and ch.arg not in alreadyGen]
-            if path is not None and len(path) > 0:
-                chs = [ch for ch in chs if ch.arg == path[0]]
-                chpath = path[1:]
-            else:
-                chpath = path
-            if len(chs) > 0:
-                print_children(chs, module, fd, '', chpath, 'data', depth, llen,
-                               ctx.opts.tree_no_expand_uses, 0, alreadyGen,
-                               prefix_with_modname=ctx.opts.modname_prefix)
-
         
 
         # 第四次遍历 将与submodule与group名称相同的grouping取出(主grouping)，并生成成员变量
@@ -522,6 +493,10 @@ def refine_type_name(typename):
 
 def get_struct_name(struname):
     ret = ""
+    
+    if struname.find(':') > 0:
+        struname = struname[(struname.find(':') + 1):]
+
     temp = struname.split('-')
     for each in temp:
         ret += each.title()
@@ -529,30 +504,33 @@ def get_struct_name(struname):
     return ret
 
 
-def print_grouping(i_children, module, fd, prefix, path, mode, depth,
+def print_grouping(i_children, module, fd, prefix, path, mode, depth, dict_Stru_Cnt, dict_Stru_Ref, stru_Name, 
                    llen, no_expand_uses, level, alreadyGen, width=0, prefix_with_modname=False):
+    content = ""
+    ref = []
     for child in i_children:
         if ((child.keyword == "container")):
             if judge_if_optional_state(child) == 1:
                 if judge_if_uses_state(child) <= 2:
                     line = "    std::shared_ptr<%s> %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
                 else:
-                    line = "    std::shared_ptr<%s> %s; " % (get_struct_name(child.arg), child.arg.replace('-', '_'))
+                    line = "    std::shared_ptr<%s> %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
             else:
                 if judge_if_uses_state(child) <= 2:
                     line = "    %s %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
                 else:
-                    line = "    %s %s; " % (get_struct_name(child.arg), child.arg.replace('-', '_'))
+                    line = "    %s %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
+            if not judge_ref_other_typefile(child) : ref.append(get_struct_name(judge_if_uses(child)))
                 
         elif ((child.keyword == "list")):
-            if judge_if_uses_state(child) <= 2:
+            if judge_if_uses_state(child) < 2:
                 line = "    std::vector<std::shared_ptr<" + \
-                    get_struct_name(judge_if_uses(child)) + ">> " + \
-                    child.arg.replace('-', '_') + ";"
+                    get_struct_name(judge_if_uses(child)) + ">> " + child.arg.replace('-', '_') + ";"
             else:
                 line = "    std::vector<std::shared_ptr<" + \
-                    get_struct_name(child.arg)[0:-1] + ">> " + \
-                    child.arg.replace('-', '_') + ";"
+                    get_struct_name(judge_if_uses(child))[0:-1] + ">> " + child.arg.replace('-', '_') + ";"
+                print("[Warning]!!! list cannot contain other node type except uses !!!")
+            if not judge_ref_other_typefile(child) : ref.append(get_struct_name(judge_if_uses(child)))
 
         elif child.keyword == "leaf-list":
             if judge_if_optional_state(child) == 1:
@@ -565,21 +543,25 @@ def print_grouping(i_children, module, fd, prefix, path, mode, depth,
         elif child.keyword == "leaf":
             if judge_if_optional_state(child) == 1:
                 line = "    std::shared_ptr<" + \
-                    refine_type_name(get_typename(child, prefix_with_modname)) + "> " + \
-                    child.arg.replace('-', '_') + ";"
+                    refine_type_name(get_typename(child, prefix_with_modname)) + "> " + child.arg.replace('-', '_') + ";"
             else:
                 line = "    %s %s; " % (refine_type_name(
                     (get_typename(child, prefix_with_modname))), refine_type_name_cpp(child.arg.replace('-', '_')))
 
         elif child.keyword == "uses":
-            line = "    %s %s; " % (refine_type_name(
-                (child.arg)), refine_type_name_cpp(child.arg.replace('-', '_')))
+            line = "    %s %s; " % (refine_type_name(child.arg), refine_type_name_cpp(child.arg.replace('-', '_')))
+            if not judge_ref_other_typefile(child) : ref.append(refine_type_name(child.arg))
 
         else:
             line = "    %s %s; " % (refine_type_name(
                 (child.arg)), refine_type_name_cpp(child.arg.replace('-', '_')))
+            print("[Warning]!!!!! The node " + child.arg + " 's type is not supported, header file generated maybe container error !!!!!!")
 
-        fd.write(line + '\n')
+        line = line + "\n"
+        content += line
+        #fd.write(line + '\n')
+    dict_Stru_Cnt[stru_Name] = content
+    dict_Stru_Ref[stru_Name] = ref
 
 
 def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
@@ -628,68 +610,56 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
 
         fd.write(line + '\n')
 
-# print_children在printnode中被递归调用
-# i_children一个module下的其中一个孩子节点，其中container或者list等容器节点下的所有孩子节点也都包括着
-# i_children[-1] : 递归调用打印孩子节点的最后一个节点
-# children.arg 当前遍历到的节点的名称
-# prefix : 前序节点的路径
-
-
-def print_children(i_children, module, fd, prefix, path, mode, depth,
-                   llen, no_expand_uses, level, alreadyGen, width=0, prefix_with_modname=False):
-
-    if depth == 0:
-        if i_children:
-            fd.write(prefix + '     ...\n')
-        return
-
-    def get_width(w, chs):
-        for ch in chs:
-            if ch.keyword in ['choice', 'case']:
-                nlen = 3 + get_width(0, ch.i_children)
-            else:
-                if ch.i_module.i_modulename == module.i_modulename:
-                    nlen = len(ch.arg)
-                else:
-                    nlen = len(ch.i_module.i_prefix) + 1 + len(ch.arg)
-            if nlen > w:
-                w = nlen
-        return w
-
-    if no_expand_uses:
-        i_children = unexpand_uses(i_children)
-
-    if width == 0:
-        width = get_width(0, i_children)
-
+def print_children(i_children, module, fd, prefix, path, mode, depth,llen,
+                   dict_Stru_Cnt, dict_Stru_ref, Stru_Name,
+                   no_expand_uses, level, alreadyGen, width=0, prefix_with_modname=False):
+    line = ""
+    
     # 遍历这个孩子节点中的所有孩子节点
-    for ch in i_children:
-        endofvec = False
-        if ((ch.keyword == 'input' or ch.keyword == 'output') and
-                len(ch.i_children) == 0):
-            pass
-        else:
-            # 当遍历到该节点所有子节点的最后一个节点时
-            if (ch == i_children[-1]
-                or (i_children[-1].keyword == 'output'
-                    and len(i_children[-1].i_children) == 0)):
-                newprefix = prefix.upper() + '__' + ch.arg.upper()
-                if level != 0:
-                    endofvec = True
+    for s in i_children:
+
+        prt_chs = [ch for ch in s.substmts if ch.keyword in ['container', 'list', 'uses', 'leaf', 'leaf-list']]
+
+        for prt_ch in prt_chs:
+            ref = []
+            if prt_ch.keyword == "container":
+                if judge_if_optional_state(s) == 1:
+                    line += "    std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
+                else:
+                    line += "    %s %s;\n" % (refine_type_name(get_typename(prt_ch, prefix_with_modname)), prt_ch.arg.replace('-', '_'))
+                ref.append(refine_type_name(get_typename(prt_ch, prefix_with_modname)))
+            
+            elif prt_ch.keyword == "leaf-list":
+                line += "    std::vector<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
+            
+            elif prt_ch.keyword == "list":
+                line += "    std::vector<std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + ">> " + prt_ch.arg.replace('-', '_') + ";\n"
+                ref.append(refine_type_name(get_typename(prt_ch, prefix_with_modname)))
+            
+            elif prt_ch.keyword == "uses":
+                line += "    " + get_struct_name(prt_ch.arg) + " " + prt_ch.arg.replace('-','_') + ";\n"
+                ref.append(refine_type_name(get_struct_name(prt_ch.arg)))
+            
+            elif prt_ch.keyword == "leaf":
+                if judge_if_optional_state(s) == 1:
+                    line += "    std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
+                else:
+                    line += "    %s %s;\n" % (refine_type_name(get_typename(prt_ch, prefix_with_modname)), prt_ch.arg.replace('-', '_'))
+            
             else:
-                newprefix = prefix.upper() + '__' + ch.arg.upper()
+                line += "    " + get_struct_name(prt_ch.arg) + " " + prt_ch.arg.replace('-','_') + ";\n"
+                print("[Warning]!!!!! The node " + prt_ch.arg + " 's type is not supported, header file generated maybe container error !!!!!!")
+            
+            chs = [ch for ch in prt_ch.substmts if ch.keyword in ['container'] and judge_if_uses_state(ch) > 1]
+            if len(chs) > 0:
+                print_children(chs, module, fd, prefix, path, mode, depth,llen,
+                               dict_Stru_Cnt, dict_Stru_ref, Stru_Name,
+                               no_expand_uses, level, alreadyGen, width, prefix_with_modname)
 
-            # 将yang模型中的中划线删除
-            newprefix = newprefix.replace('-', '_')
-
-            # 记录该节点的父节点
-            if (prefix is not None):
-                ch.prenode = prefix
-
-            # 输出当前节点
-            print_node(ch, module, fd, newprefix, path, mode, depth, llen,
-                       no_expand_uses, level, width, endofvec, alreadyGen,
-                       prefix_with_modname=prefix_with_modname)
+        dict_Stru_Cnt[get_struct_name(s.arg)] = line
+        dict_Stru_ref[get_struct_name(s.arg)] = ref
+        
+        
 
 # s.i_module.i_modulename : 当前节点所属的module名称
 # s.arg : 当前节点的名称
@@ -703,22 +673,11 @@ def print_node(s, module, fd, prefix, path, mode, depth, llen,
                no_expand_uses, level, width, endofvec, alreadyGen, prefix_with_modname=False):
 
     line = ""
-    endflag = False
-    #line += str(level) + "---"
-
     strname = get_struct_name(str(s.parent.arg))
-    # 第一次遍历的时候，先将所有的顶级的container或者list写出来
+    
+    # 检查入参
     if ((s.keyword == "container") and level == 0):
-        line += "typedef struct struct" + \
-            get_struct_name(s.arg) + "\n{"
-
-    if ((s.keyword == "list") and level == 0):
-        line += "typedef struct struct" + \
-            get_struct_name(s.arg) + "\n{"
-
-    # if ((s.arg.find(':') > 0) and level == 0):
-    #     line += "typedef struct struct" + \
-    #         get_struct_name(s.arg[s.arg.find(':' + 1):]) + "\n{"
+        line += "typedef struct struct" + get_struct_name(s.arg) + "\n{"
 
     # 检查遍历到的节点是否是当前的module
     if s.i_module.i_modulename == module.i_modulename:
@@ -779,18 +738,6 @@ def print_node(s, module, fd, prefix, path, mode, depth, llen,
     if hasattr(s, 'i_children') and s.keyword != 'uses' and level == 0:
         chs = [ch for ch in s.substmts
               if ch.keyword in ['uses', 'leaf', 'list', 'container', 'leaf-list']]
-        # if depth is not None:
-        #     depth = depth - 1
-        # chs = s.i_children
-        # if path is not None and len(path) > 0:
-        #     chs = [ch for ch in chs
-        #            if ch.arg == path[0]]
-        #     path = path[1:]
-        # if s.keyword in ['choice', 'case']:
-        #     print_children(chs, module, fd, prefix, path, mode, depth,
-        #                    llen, no_expand_uses, level + 1,  width - 3, alreadyGen,
-        #                    prefix_with_modname=prefix_with_modname)
-        # else:
         print_children(chs, module, fd, prefix, path, mode, depth, llen,
                            no_expand_uses, level + 1, alreadyGen,
                            prefix_with_modname=prefix_with_modname)
@@ -1182,14 +1129,6 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
     
     fdcpp.write("}\n\n")
 
-# s.i_module.i_modulename : 当前节点所属的module名称
-# s.arg : 当前节点的名称
-# s.keyword : 当前节点的类型
-# module : 当前遍历到的module
-# get_flags_str(s, mode) : 当前节点的读写权限
-# t = get_typename(s, prefix_with_modname) : 当前节点的数据类型
-
-
 def print_read_func_first(s, module, fd, fdcpp, prefix, path, mode, depth, llen,
                           no_expand_uses, level, width, endofvec, alreadyGen, prefix_with_modname=False):
 
@@ -1231,60 +1170,11 @@ def judge_next_ctn(i_children, level):
     if (i_children.keyword == "container" or i_children.keyword == "list") and level > 0:
         return True
 
-# print_children在printnode中被递归调用
-# i_children一个module下的其中一个孩子节点，其中container或者list等容器节点下的所有孩子节点也都包括着
-# i_children[-1] : 递归调用打印孩子节点的最后一个节点
-# children.arg 当前遍历到的节点的名称
-# prefix : 前序节点的路径
-
-
 def print_children2(i_children, module, fd, prefix, path, mode, depth,
                     llen, no_expand_uses, level, alreadyGen, width=0, prefix_with_modname=False):
-    if depth == 0:
-        if i_children:
-            fd.write(prefix + '     ...\n')
-        return
-
-    def get_width(w, chs):
-        for ch in chs:
-            if ch.keyword in ['choice', 'case']:
-                nlen = 3 + get_width(0, ch.i_children)
-            else:
-                if ch.i_module.i_modulename == module.i_modulename:
-                    nlen = len(ch.arg)
-                else:
-                    nlen = len(ch.i_module.i_prefix) + 1 + len(ch.arg)
-            if nlen > w:
-                w = nlen
-        return w
-
-    if no_expand_uses:
-        i_children = unexpand_uses(i_children)
-
-    if width == 0:
-        width = get_width(0, i_children)
-
+    endofvec = False
     # 遍历这个孩子节点中的所有孩子节点
     for ch in i_children:
-        endofvec = False
-        chs = []
-
-        # 当遍历到该节点所有子节点的最后一个节点时
-        if (ch == i_children[-1]
-            or (i_children[-1].keyword == 'output'
-                and len(i_children[-1].i_children) == 0)):
-            newprefix = prefix.upper() + '__' + ch.arg.upper()
-            if level != 0:
-                endofvec = True
-        else:
-            newprefix = prefix.upper() + '__' + ch.arg.upper()
-
-        # 将yang模型中的中划线删除
-        newprefix = newprefix.replace('-', '_')
-        if (prefix is not None):
-            #print('pre node is ' + prefix)
-            ch.prenode = prefix
-
         # 查找所有非第一级的container和list
         if ch.keyword == "container" or ch.keyword == "list":
             for cht in ch.i_children:
@@ -1295,12 +1185,12 @@ def print_children2(i_children, module, fd, prefix, path, mode, depth,
                         cht.arg.replace("-", "").title() + "\n{"
                     fd.write(line + "\n")
                     alreadyGen.append(cht.arg)
-                    print_node2(cht, module, fd, newprefix, path, mode, depth, llen,
+                    print_node2(cht, module, fd, "newprefix", path, mode, depth, llen,
                                 no_expand_uses, level, width, endofvec, alreadyGen,
                                 prefix_with_modname=prefix_with_modname)
 
         # 遍历孩子节点
-        recursive_child(ch, module, fd, newprefix, path, mode, depth, llen,
+        recursive_child(ch, module, fd, "newprefix", path, mode, depth, llen,
                         no_expand_uses, level, width, endofvec, alreadyGen,
                         prefix_with_modname=prefix_with_modname)
 
@@ -1366,7 +1256,9 @@ def print_read_grp_next_func(groupname, module, fd, fdcpp, level):
 def judge_if_uses(child_node):
     child_len = [ch for ch in child_node.substmts
                  if ch.keyword == "uses"]
-    child_all_len = [ch2 for ch2 in child_node.substmts]
+
+    if(len(child_len) > 1):
+        print("[Warning]!!! container or list " + child_node.arg + " can not contain more than one uses, please check !!!")
 
     if(len(child_len) == 1):
         if str(child_len[0].arg).find(":") > 0:
@@ -1412,6 +1304,17 @@ def judge_if_uses_state(child_node):
     else:
         return 5
     
+def judge_ref_other_typefile(child_node):
+    child_len = [ch for ch in child_node.substmts
+                 if ch.keyword == "uses"]
+
+    if(len(child_len) == 1):
+        if str(child_len[0].arg).find(":") > 0:
+            return True
+        else:
+            return False
+    else:
+        return False
 
 
 def print_grp_children(i_children, module, fd, prefix, path, mode, depth,
