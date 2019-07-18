@@ -79,6 +79,10 @@ def print_typedef_header(fdtd, typedef):
             elif ch.arg in ['int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64']:
                 tdline = "typedef " + refine_type_name(ch.arg) + " " + get_struct_name(typedef.arg) + ";\n\n"
                 fdtd.write(tdline)
+            
+            else:
+                print("[Warning]!!!!! type file include unsupported type : node : " + ch.arg + ",please check it !!!!!!")
+
 
 def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
     line = "typedef struct struct" + get_struct_name(group.arg) + "\n{\n"
@@ -130,6 +134,7 @@ def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
         else:
             line = "    %s %s; " % (refine_type_name(
                 (child.arg)), refine_type_name_cpp(child.arg.replace('-', '_')))
+            print("[Warning]!!!!! The node " + child.arg + " 's type is not supported!")
         fdtd.write(line + "\n")
 
     fdtd.write("} " + get_struct_name(group.arg) + ";\n")
@@ -301,17 +306,9 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
                                ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                                prefix_with_modname=ctx.opts.modname_prefix)
 
-        # 第三次遍历 则遍历所有节点，找出非首级的container和list
-        for groupname in module.i_groupings:
-            chs_ctn = [ch for ch in module.i_groupings[groupname].i_children
-                       if ch.keyword in ['container']]
-
-            if len(chs_ctn) > 0:
-                print_children2(chs_ctn, module, fd, '', "chpath", 'data', depth, llen,
-                                ctx.opts.tree_no_expand_uses, 0, alreadyGen,
-                                prefix_with_modname=ctx.opts.modname_prefix)
+        # 将读取出来的所有typedef排序并写入文件
+        print_type_to_file(fd, dict_Stru_Cnt, dict_Stru_ref)
         
-
         # 第四次遍历 将与submodule与group名称相同的grouping取出(主grouping)，并生成成员变量
         classname = get_class_name(module)
         classline = "class " + classname + \
@@ -325,7 +322,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
                 chs_ctn = [ch for ch in module.i_groupings[groupname].i_children
                            if ch.keyword in statements.mem_definition_keywords]
             if len(chs_ctn) > 0:
-                print_mem(chs_ctn, module, fd, fdcpp, '', chpath, 'data', depth, llen,
+                print_mem(chs_ctn, module, fd, fdcpp, '', "chpath", 'data', depth, llen,
                           ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                           prefix_with_modname=ctx.opts.modname_prefix)
 
@@ -342,7 +339,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
                               if ch.keyword in statements.type_definition_keywords]
 
             if len(chs_func_1) > 0:
-                print_children_read_func_first(chs_func_1, module, fd, fdcpp, '', chpath, 'data', depth, llen,
+                print_children_read_func_first(chs_func_1, module, fd, fdcpp, '', "chpath", 'data', depth, llen,
                                                ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                                                prefix_with_modname=ctx.opts.modname_prefix)
 
@@ -350,7 +347,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
         for groupname in module.i_groupings:
             if groupname == module.arg.replace('certus-5gnr-du-', ''):
                 continue
-            print_read_grp_func(groupname, module, fd, fdcpp, '', chpath, 'data', depth, llen,
+            print_read_grp_func(groupname, module, fd, fdcpp, '', "chpath", 'data', depth, llen,
                                 ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                                 prefix_with_modname=ctx.opts.modname_prefix)
 
@@ -381,6 +378,31 @@ def print_cppfile_header(modules, fdcpp):
 
         fdcpp.write(headerline + "\n")
         #print(module.keyword)
+
+def print_type_to_file(fd, dict_Stru_Cnt, dict_Stru_ref):
+    CntRef = {}
+    ch_noref = [ch for ch in dict_Stru_Cnt if dict_Stru_ref[ch] == []]
+    for ch in ch_noref:
+        fd.write("typedef struct struct" + ch + "\n{\n")
+        fd.write(dict_Stru_Cnt[ch])
+        fd.write("} " + ch + ";\n\n")
+        dict_Stru_ref.pop(ch)
+    
+    for ch in dict_Stru_ref:
+        tmp = [val for val in dict_Stru_ref[ch] if val in ch_noref]
+        for del_ch in tmp:
+            dict_Stru_ref[ch].remove(del_ch)
+    
+    ch_noref = [ch for ch in dict_Stru_ref if dict_Stru_ref[ch] == []]
+    for ch in ch_noref:
+        fd.write("typedef struct struct" + ch + "\n{\n")
+        fd.write(dict_Stru_Cnt[ch])
+        fd.write("} " + ch + ";\n\n")
+        dict_Stru_ref.pop(ch)
+
+    abc = sorted(dict_Stru_ref.items(), key = lambda x : len(x))
+
+    print(111)
 
 def unexpand_uses(i_children):
     res = []
@@ -511,15 +533,9 @@ def print_grouping(i_children, module, fd, prefix, path, mode, depth, dict_Stru_
     for child in i_children:
         if ((child.keyword == "container")):
             if judge_if_optional_state(child) == 1:
-                if judge_if_uses_state(child) <= 2:
-                    line = "    std::shared_ptr<%s> %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
-                else:
-                    line = "    std::shared_ptr<%s> %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
+                line = "    std::shared_ptr<%s> %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
             else:
-                if judge_if_uses_state(child) <= 2:
-                    line = "    %s %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
-                else:
-                    line = "    %s %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
+                line = "    %s %s; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
             if not judge_ref_other_typefile(child) : ref.append(get_struct_name(judge_if_uses(child)))
                 
         elif ((child.keyword == "list")):
@@ -613,28 +629,29 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
 def print_children(i_children, module, fd, prefix, path, mode, depth,llen,
                    dict_Stru_Cnt, dict_Stru_ref, Stru_Name,
                    no_expand_uses, level, alreadyGen, width=0, prefix_with_modname=False):
-    line = ""
-    
     # 遍历这个孩子节点中的所有孩子节点
     for s in i_children:
-
+        line = ""
         prt_chs = [ch for ch in s.substmts if ch.keyword in ['container', 'list', 'uses', 'leaf', 'leaf-list']]
-
+        ref = []
         for prt_ch in prt_chs:
-            ref = []
-            if prt_ch.keyword == "container":
-                if judge_if_optional_state(s) == 1:
-                    line += "    std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
-                else:
-                    line += "    %s %s;\n" % (refine_type_name(get_typename(prt_ch, prefix_with_modname)), prt_ch.arg.replace('-', '_'))
-                ref.append(refine_type_name(get_typename(prt_ch, prefix_with_modname)))
             
+            if prt_ch.keyword == "container":
+                if judge_if_optional_state(prt_ch) == 1:
+                    line += "    std::shared_ptr<" + refine_type_name(judge_if_uses(prt_ch)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
+                else:
+                    line += "    %s %s;\n" % (refine_type_name(judge_if_uses(prt_ch)), prt_ch.arg.replace('-', '_'))
+                if not judge_ref_other_typefile(prt_ch) : ref.append(refine_type_name(judge_if_uses(prt_ch)))
+
             elif prt_ch.keyword == "leaf-list":
                 line += "    std::vector<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
             
             elif prt_ch.keyword == "list":
-                line += "    std::vector<std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + ">> " + prt_ch.arg.replace('-', '_') + ";\n"
-                ref.append(refine_type_name(get_typename(prt_ch, prefix_with_modname)))
+                if judge_if_uses_state(prt_ch) == 1:
+                    line += "    std::vector<std::shared_ptr<" + refine_type_name(judge_if_uses(prt_ch)) + ">> " + prt_ch.arg.replace('-', '_') + ";\n"
+                else:
+                    line += "    std::vector<std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + ">> " + prt_ch.arg.replace('-', '_') + ";\n"
+                if not judge_ref_other_typefile(prt_ch) : ref.append(refine_type_name(judge_if_uses(prt_ch)))
             
             elif prt_ch.keyword == "uses":
                 line += "    " + get_struct_name(prt_ch.arg) + " " + prt_ch.arg.replace('-','_') + ";\n"
