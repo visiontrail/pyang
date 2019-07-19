@@ -1,6 +1,6 @@
-module certus-5gnr-types-for-cell {
-    namespace "http://certusnet.com/5gnr/certus-5gnr-types-for-cell";
-    prefix cgtfc;
+module certus-5gnr-cell-types {
+    namespace "http://certusnet.com/5gnr/certus-5gnr-cell-types";
+    prefix cgcts;
     
     organization "CertusNet";
     description "This module defines types used by 5gnr cell.";

@@ -4,8 +4,8 @@ submodule certus-5gnr-du-du-base {
     }
     
     import tailf-common { prefix tailf; }
-    import certus-5gnr-types-for-du {
-        prefix cgtfd;
+    import certus-5gnr-du-types {
+        prefix cgdts;
         revision-date 2019-07-08;
     }
     
@@ -19,12 +19,10 @@ submodule certus-5gnr-du-du-base {
 
     grouping sctp {
         container dst {
-            uses cgtfd:ip-addr;
-            leaf port { type uint32; }
+            uses cgdts:ip-addr-port;
         }
         container src {
-            uses cgtfd:ip-addr;
-            leaf port { type uint32; }
+            uses cgdts:ip-addr-port;
         }
         container cfg-params {
             leaf num-outbound-streams { type uint16; }
@@ -60,6 +58,20 @@ submodule certus-5gnr-du-du-base {
             default 2;
         }
     }
+    grouping du-module-log {
+        leaf module-id { type cgdts:du-module-id-e; }
+        leaf log-lvl {
+            type cgdts:log-lvl-e;
+            default LL-OFF;
+        }
+    }
+    grouping ngp-module-log {
+        leaf module-id { type cgdts:ngp-module-id-e; }
+        leaf log-lvl {
+            type cgdts:log-lvl-e;
+            default LL-OFF;
+        }
+    }
     grouping log {
         leaf file-name {
             type string;
@@ -67,19 +79,11 @@ submodule certus-5gnr-du-du-base {
         }
         list du-modules {
             key module-id;
-            leaf module-id { type cgtfd:du-module-id-e; }
-            leaf log-lvl {
-                type cgtfd:log-lvl-e;
-                default LL-OFF;
-            }
+            uses du-module-log;
         }
         list ngp-modules {
             key module-id;
-            leaf module-id { type cgtfd:ngp-module-id-e; }
-            leaf log-lvl {
-                type cgtfd:log-lvl-e;
-                default LL-OFF;
-            }
+            uses ngp-module-log;
         }
     }
 
@@ -108,7 +112,7 @@ submodule certus-5gnr-du-du-base {
             uses sctp;
         }
         container egtpu {
-            uses cgtfd:ip-addr;
+            uses cgdts:ip-addr;
             leaf teid-min { type uint32; }
             leaf teid-max { type uint32; }
         }
@@ -117,7 +121,7 @@ submodule certus-5gnr-du-du-base {
             leaf rlc-sdu-q-lwr-thr { type uint16; }
             leaf rlc-sdu-q-upr-thr { type uint16; }
             leaf nrup-flw-ctrl-tmr { type uint16; }
-            leaf en-nrup_missing_rept { type empty; }
+            leaf en-nrup-missing-rept { type empty; }
             leaf read-ingress-pkts-per-tti { type uint32; }
         }
         container drx {

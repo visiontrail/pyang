@@ -38,16 +38,14 @@ void oam_agent_rcfd_du_ns::read_grp_ns(XCONFD_YANGTREE_T* yt, Ns& ns)
     read_grp_ns__nsis(nsis_yt, ns.nsis);
 }
 
-void oam_agent_rcfd_du_ns::read_grp_ns__local_sm(XCONFD_YANGTREE_T* yt, std::shared_ptr<IpAddr>& local_sm)
+void oam_agent_rcfd_du_ns::read_grp_ns__local_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& local_sm)
 {
-    xconfd_get(local_sm->port, uint32, "port", yt);
-    read_grp_ip_addr(yt, local_sm.ip_addr);
+    read_grp_ip_addr_port(yt, local_sm);
 }
 
-void oam_agent_rcfd_du_ns::read_grp_ns__remote_sm(XCONFD_YANGTREE_T* yt, std::shared_ptr<IpAddr>& remote_sm)
+void oam_agent_rcfd_du_ns::read_grp_ns__remote_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& remote_sm)
 {
-    xconfd_get(remote_sm->port, uint32, "port", yt);
-    read_grp_ip_addr(yt, remote_sm.ip_addr);
+    read_grp_ip_addr_port(yt, remote_sm);
 }
 
 void oam_agent_rcfd_du_ns::read_grp_ns__nsis(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<Nsi>>& nsis)

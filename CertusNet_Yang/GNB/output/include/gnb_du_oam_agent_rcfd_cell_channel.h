@@ -13,36 +13,36 @@ namespace gnb_du
 namespace rcfd
 {
 
-typedef struct structPcch
-{
-    PagingCycleE default_paging_cycle; 
-    PagingFrameOffsetTypeE paging_frame_offset_type; 
-    uint8_t paging_frame_offset; 
-    NsE ns; 
-    bool f_pdcch_mon_occ_of_po_present; 
-} Pcch; 
-
 typedef struct structBcch
 {
-    ModiPerdCoeffE modi_perd_coeff; 
-    SiWinLenE si_win_len; 
-} Bcch; 
+    ModiPerdCoeffE modi_perd_coeff;
+    SiWinLenE si_win_len;
+} Bcch;
 
-typedef struct structPuschScell
+typedef struct structPcch
 {
-    std::shared_ptr<MaxCbgsPerTbE> max_cbgs_per_tb;
-    bool limited_buf_rm; 
-    std::shared_ptr<XOverheadE> x_overhead;
-} PuschScell; 
+    PagingCycleE default_paging_cycle;
+    PagingFrameOffsetTypeE paging_frame_offset_type;
+    uint8_t paging_frame_offset;
+    NsE ns;
+    bool f_pdcch_mon_occ_of_po_present;
+} Pcch;
 
 typedef struct structPdschScell
 {
     std::shared_ptr<MaxCbgsPerTbE> max_cbgs_per_tb;
-    bool cbg_flush_ind; 
+    bool cbg_flush_ind;
     std::shared_ptr<XOverheadE> x_overhead;
     std::shared_ptr<PdschHarqProcessesNumE> harq_processes_num;
     std::shared_ptr<uint8_t> pucch_cell_idx;
-} PdschScell; 
+} PdschScell;
+
+typedef struct structPuschScell
+{
+    std::shared_ptr<MaxCbgsPerTbE> max_cbgs_per_tb;
+    bool limited_buf_rm;
+    std::shared_ptr<XOverheadE> x_overhead;
+} PuschScell;
 
 class oam_agent_rcfd_cell_channel : public allocator
 {

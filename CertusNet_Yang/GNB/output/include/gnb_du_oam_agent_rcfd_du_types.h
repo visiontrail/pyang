@@ -94,6 +94,20 @@ void read_grp_ip_addr(XCONFD_YANGTREE_T* yt, IpAddr& ip_addr)
     xconfd_get_optional(ip_addr.ipv4_addr, std::string, ipv4, "ipv4-addr", yt);
     xconfd_get_optional(ip_addr.ipv6_addr, std::string, ipv6, "ipv6-addr", yt);
 }
+typedef struct structIpAddrPort
+{
+    IpVersionE ip_version; 
+    std::shared_ptr<std::string> ipv4_addr;
+    std::shared_ptr<std::string> ipv6_addr;
+    uint32_t port; 
+} IpAddrPort;
+void read_grp_ip_addr_port(XCONFD_YANGTREE_T* yt, IpAddrPort& ip_addr_port)
+{
+    xconfd_get(ip_addr_port.ip_version, ip-version-e, "ip-version", yt);
+    xconfd_get_optional(ip_addr_port.ipv4_addr, std::string, ipv4, "ipv4-addr", yt);
+    xconfd_get_optional(ip_addr_port.ipv6_addr, std::string, ipv6, "ipv6-addr", yt);
+    xconfd_get(ip_addr_port.port, uint32, "port", yt);
+}
 } //end of namespace rcfd
 } //end of namespace gnb_du
 #endif

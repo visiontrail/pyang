@@ -43,16 +43,27 @@ class xTypeDef(plugin.PyangPlugin):
         emit_tree(ctx, modules, fd, ctx.opts.tree_depth,
                   ctx.opts.tree_line_length, path)
 
+def get_output_filepath_inc(fd):
+    filepath = ""
+
+    tempfilepath = fd.stream.name.split('/')
+    for tempfp in tempfilepath:
+        if tempfp == tempfilepath[-1] or tempfp == tempfilepath[-2]:
+            continue
+        filepath += "/" + tempfp
+    
+    return (filepath[1:] + "/include")
+
 def get_output_filepath(fd):
     filepath = ""
 
     tempfilepath = fd.stream.name.split('/')
     for tempfp in tempfilepath:
-        if tempfp == tempfilepath[-1]:
+        if tempfp == tempfilepath[-1] or tempfp == tempfilepath[-2]:
             continue
         filepath += "/" + tempfp
     
-    return (filepath[1:])
+    return (filepath[1:] + "/src")
 
 def get_typedef_type(tp):
     child_len = [ch for ch in tp.substmts
@@ -80,10 +91,10 @@ def print_typedef_header(fdtd, typedef):
                 tdline = "typedef " + refine_type_name(ch.arg) + " " + get_struct_name(typedef.arg) + ";\n\n"
                 fdtd.write(tdline)
             
-            else:
-                print("[Warning]!!!!! type file include unsupported type : node : " + ch.arg + ",please check it !!!!!!")
-
-
+            elif ch.arg not in ['int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64'] and \
+                 ch.keyword not in ['description']:
+                 print("[Warning]!!!!! type file include unsupported type : node : " + ch.arg + ",please check it !!!!!!")
+            
 def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
     line = "typedef struct struct" + get_struct_name(group.arg) + "\n{\n"
     fdtd.write(line)
@@ -173,8 +184,8 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
     # 首先将import中的typedef取出，生成对应的Typedef的头文件
     for typedefmd in ctx.modules:
         md = ctx.modules[typedefmd]
-        if md.arg == "certus-5gnr-types-for-cell":
-            fdtd = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_cell_types.h" ), "w")
+        if md.arg == "certus-5gnr-du-cell-types":
+            fdtd = open((get_output_filepath_inc(fd) + "/gnb_du_oam_agent_rcfd_cell_types.h" ), "w")
             fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_cell_types.h \n"
             fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
             fdline += "*/ \n\n"
@@ -212,8 +223,8 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
             fdline += "#endif"
             fdtd.write(fdline)
 
-        elif md.arg == "certus-5gnr-types-for-du":
-            fdtd = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_du_types.h" ), "w")
+        elif md.arg == "certus-5gnr-du-du-types":
+            fdtd = open((get_output_filepath_inc(fd) + "/gnb_du_oam_agent_rcfd_du_types.h" ), "w")
             fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_du_types.h \n"
             fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
             fdline += "*/ \n\n"
@@ -283,23 +294,17 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
             
             chs_ctn = [ch for ch in module.i_groupings[groupname].substmts
                         if ch.keyword in ['container', 'list', 'uses', 'leaf', 'leaf-list']]
-
-            # line = "typedef struct struct" + get_struct_name(groupname) + "\n{\n"
-            # fd.write(line)
             print_grouping(chs_ctn, module, fd, '', "chpath", 'data', depth,
                         dict_Stru_Cnt, dict_Stru_ref, get_struct_name(groupname),
                         llen, ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                         prefix_with_modname=ctx.opts.modname_prefix)
-            # line = "} " + get_struct_name(groupname) + ";\n\n"
-            # fd.write(line)
-            alreadyGen.append(groupname)
+            alreadyGen.append(groupname) # 防止有container与grouping同名
 
-        # 第二遍循环 grouping下所有的container
+        # 第二遍遍历 grouping下所有的container
         for groupname in module.i_groupings:
             chs = [ch for ch in module.i_groupings[groupname].substmts
                    if ch.keyword in ['container'] and judge_if_uses_state(ch) > 1
                    and ch.arg not in alreadyGen]
-
             if len(chs) > 0:
                 print_children(chs, module, fd, '', "chpath", 'data', depth, llen,
                                dict_Stru_Cnt, dict_Stru_ref, get_struct_name(groupname),
@@ -309,7 +314,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
         # 将读取出来的所有typedef排序并写入文件
         print_type_to_file(fd, dict_Stru_Cnt, dict_Stru_ref)
         
-        # 第四次遍历 将与submodule与group名称相同的grouping取出(主grouping)，并生成成员变量
+        # 第三次遍历 将与submodule与group名称相同的grouping取出(主grouping)，并生头文件成成员变量，以及CPP文件构造函数
         classname = get_class_name(module)
         classline = "class " + classname + \
             " : public allocator\n{\npublic:\n"
@@ -325,25 +330,24 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
                 print_mem(chs_ctn, module, fd, fdcpp, '', "chpath", 'data', depth, llen,
                           ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                           prefix_with_modname=ctx.opts.modname_prefix)
-
         fd.write("\n")
         fdcpp.write("}\n\n")
 
         alreadyGen = []
-        # 第六遍循环 输出所有首级container和list的read_function
+        # 第四次遍历 输出所有主grouping首级container和list的read_function
         for groupname in module.i_groupings:
             if groupname != module.arg.replace('certus-5gnr-du-', ''):
                 continue
             else:
                 chs_func_1 = [ch for ch in module.i_groupings[groupname].i_children
-                              if ch.keyword in statements.type_definition_keywords]
+                              if ch.keyword in ['container', 'list']]
 
             if len(chs_func_1) > 0:
                 print_children_read_func_first(chs_func_1, module, fd, fdcpp, '', "chpath", 'data', depth, llen,
                                                ctx.opts.tree_no_expand_uses, 0, alreadyGen,
                                                prefix_with_modname=ctx.opts.modname_prefix)
 
-        # 第七次遍历 所有grouping的read_grp_function
+        # 第五次遍历 所有非主grouping的read_grp_function
         for groupname in module.i_groupings:
             if groupname == module.arg.replace('certus-5gnr-du-', ''):
                 continue
@@ -377,10 +381,8 @@ def print_cppfile_header(modules, fdcpp):
         headerline += "{\n"
 
         fdcpp.write(headerline + "\n")
-        #print(module.keyword)
 
 def print_type_to_file(fd, dict_Stru_Cnt, dict_Stru_ref):
-    CntRef = {}
     ch_noref = [ch for ch in dict_Stru_Cnt if dict_Stru_ref[ch] == []]
     for ch in ch_noref:
         fd.write("typedef struct struct" + ch + "\n{\n")
@@ -400,9 +402,22 @@ def print_type_to_file(fd, dict_Stru_Cnt, dict_Stru_ref):
         fd.write("} " + ch + ";\n\n")
         dict_Stru_ref.pop(ch)
 
-    abc = sorted(dict_Stru_ref.items(), key = lambda x : len(x))
-
-    print(111)
+    sortedlist = []
+    for ch in dict_Stru_ref:
+        if ch not in sortedlist : sortedlist.append(str(ch))
+        for ref in dict_Stru_ref[ch]:
+            if ref in dict_Stru_ref.keys():
+                i = sortedlist.index(ch)
+                sortedlist.insert(i, str(ref))
+    sortedlist_final = []
+    for ch in sortedlist:
+        if ch not in sortedlist_final:
+            sortedlist_final.append(ch)
+    
+    for ch in sortedlist_final:
+        fd.write("typedef struct struct" + ch + "\n{\n")
+        fd.write(dict_Stru_Cnt[ch])
+        fd.write("} " + ch + ";\n\n")
 
 def unexpand_uses(i_children):
     res = []
@@ -545,7 +560,7 @@ def print_grouping(i_children, module, fd, prefix, path, mode, depth, dict_Stru_
             else:
                 line = "    std::vector<std::shared_ptr<" + \
                     get_struct_name(judge_if_uses(child))[0:-1] + ">> " + child.arg.replace('-', '_') + ";"
-                print("[Warning]!!! list cannot contain other node type except uses !!!")
+                print("[Warning]!!! In " + module.arg + " list " + child.arg + " cannot contain other node type except uses !!!")
             if not judge_ref_other_typefile(child) : ref.append(get_struct_name(judge_if_uses(child)))
 
         elif child.keyword == "leaf-list":
@@ -585,26 +600,21 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
     cppline = ""
     for child in i_children:
         if ((child.keyword == "container")):
-            opt = [temp for temp in child.substmts
-                   if temp.arg == "optional"]
+            opt = [temp for temp in child.substmts if temp.arg == "optional"]
             if (len(opt) > 0):
-                line = "    std::shared_ptr<" + \
-                    get_struct_name(child.arg) + "> " + \
+                line = "    std::shared_ptr<" + get_struct_name(child.arg) + "> " + \
                     child.arg.replace('-', '_') + "_;"
             else:
-                line = "    %s %s_; " % (get_struct_name(child.arg),
-                                         child.arg.replace('-', '_'))
+                line = "    %s %s_; " % (get_struct_name(child.arg), child.arg.replace('-', '_'))
             
             ytname = child.arg.replace('-','_') + "_yt"
             cppline = "    auto " + ytname + " = " + "xconfd_yang_tree_get_node" + "(yt, \"" + \
                 child.arg + "\");\n"
-            cppline += "    read_" + child.arg.replace('-', '_') + \
-                "(" + ytname + ");\n"
+            cppline += "    read_" + child.arg.replace('-', '_') + "(" + ytname + ");\n"
             fdcpp.write(cppline)
 
         elif ((child.keyword == "list")):
-            line = "    std::vector<std::shared_ptr<" + \
-                get_struct_name(child.arg)[0:-1] + ">> " + \
+            line = "    std::vector<std::shared_ptr<" + get_struct_name(child.arg)[0:-1] + ">> " + \
                 child.arg.replace('-', '_') + "_;"
             cppline = "    auto " + child.arg.replace('-', '_') + "_yt = xconfd_yang_tree_get_node(yt, \"" + child.arg + "\");\n"
             cppline += "    read_" + child.arg.replace('-', '_') + "(" + child.arg.replace('-', '_') + "_yt);\n"
@@ -615,9 +625,17 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
                 refine_type_name(get_typename(
                     child, prefix_with_modname))[0:-1] + "> " + child.arg.replace('-', '_') + "_;"
 
+        elif child.keyword == "leaf":
+            line = "    %s %s_; " % (refine_type_name((get_typename(child, prefix_with_modname))), child.arg.replace('-', '_'))
+            if get_typename(child, prefix_with_modname) == "empty":
+                cppline = "    xconfd_get_empty_value(" + child.arg.replace('-', '_') + "_ " + ", \"" + child.arg + "\", yt);\n"
+            else:
+                cppline = print_get_leaf_realize(child, child.arg.replace('-', '_') + "_")
+            fdcpp.write(cppline)
+        
         else:
-            line = "    %s %s_; " % (refine_type_name(
-                (get_typename(child, prefix_with_modname))), child.arg.replace('-', '_'))
+            print("[Warning]!!!!! Generating Constructor: The node " + child.arg + " 's type is not supported !!!!!!")
+            line = "    %s %s_; " % (refine_type_name((get_typename(child, prefix_with_modname))), child.arg.replace('-', '_'))
             if get_typename(child, prefix_with_modname) == "empty":
                 cppline = "    xconfd_get_empty_value(" + child.arg.replace('-', '_') + "_ " + ", \"" + child.arg + "\", yt);\n"
             else:
@@ -654,11 +672,10 @@ def print_children(i_children, module, fd, prefix, path, mode, depth,llen,
                 if not judge_ref_other_typefile(prt_ch) : ref.append(refine_type_name(judge_if_uses(prt_ch)))
             
             elif prt_ch.keyword == "uses":
-                line += "    " + get_struct_name(prt_ch.arg) + " " + prt_ch.arg.replace('-','_') + ";\n"
-                ref.append(refine_type_name(get_struct_name(prt_ch.arg)))
+                line += "    " + refine_type_name(judge_if_uses(prt_ch)) + " " + judge_if_uses(prt_ch).replace('-','_') + ";\n"
             
             elif prt_ch.keyword == "leaf":
-                if judge_if_optional_state(s) == 1:
+                if judge_if_optional_state(prt_ch) == 1:
                     line += "    std::shared_ptr<" + refine_type_name(get_typename(prt_ch, prefix_with_modname)) + "> " + prt_ch.arg.replace('-', '_') + ";\n"
                 else:
                     line += "    %s %s;\n" % (refine_type_name(get_typename(prt_ch, prefix_with_modname)), prt_ch.arg.replace('-', '_'))
@@ -676,107 +693,14 @@ def print_children(i_children, module, fd, prefix, path, mode, depth,llen,
         dict_Stru_Cnt[get_struct_name(s.arg)] = line
         dict_Stru_ref[get_struct_name(s.arg)] = ref
         
-        
-
-# s.i_module.i_modulename : 当前节点所属的module名称
-# s.arg : 当前节点的名称
-# s.keyword : 当前节点的类型
-# module : 当前遍历到的module
-# get_flags_str(s, mode) : 当前节点的读写权限
-# t = get_typename(s, prefix_with_modname) : 当前节点的数据类型
-
-
-def print_node(s, module, fd, prefix, path, mode, depth, llen,
-               no_expand_uses, level, width, endofvec, alreadyGen, prefix_with_modname=False):
-
-    line = ""
-    strname = get_struct_name(str(s.parent.arg))
-    
-    # 检查入参
-    if ((s.keyword == "container") and level == 0):
-        line += "typedef struct struct" + get_struct_name(s.arg) + "\n{"
-
-    # 检查遍历到的节点是否是当前的module
-    if s.i_module.i_modulename == module.i_modulename:
-        name = s.arg
-    else:
-        if prefix_with_modname:
-            name = s.i_module.i_modulename + ':' + s.arg
-        else:
-            name = s.i_module.i_prefix + ':' + s.arg
-
-    # t : 当前节点的数据类型
-    t = get_typename(s, prefix_with_modname)
-
-    # 以下组合一行的宏定义值
-    if (s.keyword == 'list' or s.keyword == 'container') and (level == 0):
-        line += ""
-    # 第一次遍历，只要这个container不是第一级，则它就是其他container的节点
-    elif ((s.keyword == "container") and level != 0):
-        line += "    %s %s; " % (get_struct_name(s.arg),
-                                 name.replace('-', '_'))
-    elif ((s.keyword == "list") and level != 0):
-        line += "    std::vector<std::shared_ptr<" + \
-            get_struct_name(s.arg)[0:-1] + ">> " + name.replace('-', '_') + ";"
-    elif (s.keyword == "leaf-list"):
-        line += "    std::vector<" + \
-            refine_type_name(get_typename(s, prefix_with_modname)) + "> " + name.replace('-', '_') + ";"
-    elif (s.arg.find(':') > 0):
-        line += "    " + get_struct_name(s.arg[s.arg.find(':') + 1:]) +  " " + s.arg[s.arg.find(':') + 1 :].replace('-', '_') +";"
-    elif (s.keyword == "uses"):
-        line += "    " + get_struct_name(s.arg) + " " + s.arg.replace('-','_') + ";"
-    elif (s.keyword == "leaf"):
-        if judge_if_optional_state(s) == 1:
-            line += "    std::shared_ptr<" + \
-                refine_type_name(get_typename(s, prefix_with_modname)) + "> " + \
-                s.arg.replace('-', '_') + ";"
-        else:
-            line += "    %s %s; " % (refine_type_name(t),
-                                     name.replace('-', '_'))
-    else:
-        if s.parent.keyword == "list" or s.parent.keyword == "container":
-            line += "    %s %s; " % (refine_type_name(t),
-                                     name.replace('-', '_'))
-        else:
-            line += "    " + get_struct_name(s.arg) + " " + s.arg.replace('-','_')
-
-    if (s.keyword == "list"):
-        strname = strname[0:-1]
-
-    # 如果一个container或者list结束了，则结束该typedef
-    if endofvec == True and endflag == False:
-        line += "\n} " + strname + "; \n"
-        alreadyGen.append(s.parent.arg)
-
-    # 将当前的节点写入文件中
-    fd.write(line + '\n')
-
-    # 如果当前节点有孩子（不是第一级不再往下遍历了）
-    if hasattr(s, 'i_children') and s.keyword != 'uses' and level == 0:
-        chs = [ch for ch in s.substmts
-              if ch.keyword in ['uses', 'leaf', 'list', 'container', 'leaf-list']]
-        print_children(chs, module, fd, prefix, path, mode, depth, llen,
-                           no_expand_uses, level + 1, alreadyGen,
-                           prefix_with_modname=prefix_with_modname)
-
 
 def print_children_read_func_first(i_children, module, fd, fdcpp, prefix, path, mode, depth,
                                    llen, no_expand_uses, level, alreadyGen, width=0, prefix_with_modname=False):
-    endofvec = False
     # 遍历这个孩子节点中的所有container或list节点
     for ch in i_children:
-        newprefix = (prefix + '__' + ch.arg).replace('-', '_')
-        if level != 0:
-            endofvec = True
-
-        # 记录该节点的父节点
-        if (prefix is not None):
-            ch.prenode = prefix
-
         # 输出当前节点
-        print_read_func_first(ch, module, fd, fdcpp, newprefix, path, mode, depth, llen,
-                              no_expand_uses, level, width, endofvec, alreadyGen,
-                              prefix_with_modname=prefix_with_modname)
+        print_read_func_first(ch, module, fd, fdcpp, path, mode, depth, llen,
+                              no_expand_uses, level, width, alreadyGen)
 
 def get_class_name(module):
     mod_name = module.arg.replace(
@@ -861,7 +785,7 @@ def print_read_func_realize(fdcpp, s, module, line, level):
     
     # 将该函数的实现写入到cpp中
     fdcpp.write(cppline[:-1])
-    # 这个节点下使用了uses
+    # 这个节点下使用了uses,且仅使用了uses：
     if judge_if_uses_state(s) == 1:
         # 如果是一个container
         if s.keyword == "container":
@@ -915,21 +839,6 @@ def print_read_func_realize(fdcpp, s, module, line, level):
             # 打印所有leaf节点
             for prtch in s.substmts:
                 if prtch.keyword == "leaf":
-                    # 如果该leaf的类型带有feature optional，且类型为enum：
-                    # if ((get_typename(prtch) == "enumeration" or refine_type_name_cpp(get_typename(prtch)) == "enum") and 
-                    #     (judge_if_optional_state(prtch) == 1)):
-                    #     cppline = "    xconfd_get_optional_enum(" + s.arg.replace('-','_') + "_." + prtch.arg.replace('-','_') + \
-                    #         ", " + refine_type_name(get_typename(prtch)) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
-                    # elif ((get_typename(prtch) != "enumeration" or refine_type_name_cpp(get_typename(prtch)) != "enum") and 
-                    #     (judge_if_optional_state(prtch) == 1)):
-                    #     cppline = "    xconfd_get_optional(" + \
-                    #         s.arg.replace('-','_') + "_." + prtch.arg.replace('-','_') + ", " + \
-                    #         refine_type_name(get_typename(prtch)) + ", " + \
-                    #         refine_type_name_cpp(get_typename(prtch)) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
-                    # else:
-                    #     cppline = "    xconfd_get(" + s.arg.replace('-','_') + "_." + prtch.arg.replace('-','_') + \
-                    #         ", " + refine_type_name_cpp(get_typename(prtch)) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
-                    # fdcpp.write(cppline)
                     fdcpp.write(print_get_leaf_realize(prtch, s.arg.replace('-','_') + "_." + prtch.arg.replace('-','_')))
 
         # 主grouping第一级使用了list，且带有其他节点的时候（list\leaf-list\leaf）
@@ -941,7 +850,7 @@ def print_read_func_realize(fdcpp, s, module, line, level):
 
             for prtch in s.substmts:
                 if prtch.keyword == "uses":
-                    continue;
+                    continue
                 elif prtch.keyword in ['leaf', 'leaf-list']:
                     cppline = "        auto " +judge_if_uses(s).replace('-','_')+ " = std::make_shared<" + get_struct_name(judge_if_uses(s).replace('-','_')) + ">();\n"
                     cppline += print_get_leaf_realize(prtch, s.arg.replace('-','_') + "_." + prtch.arg.replace('-','_'))
@@ -1146,29 +1055,27 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
     
     fdcpp.write("}\n\n")
 
-def print_read_func_first(s, module, fd, fdcpp, prefix, path, mode, depth, llen,
-                          no_expand_uses, level, width, endofvec, alreadyGen, prefix_with_modname=False):
+def print_read_func_first(s, module, fd, fdcpp, path, mode, depth, llen,
+                          no_expand_uses, level, width, alreadyGen):
 
     line = ""
-    # 第一次遍历的时候，先将所有的顶级的container或者list写出来
+    # 第一次遍历的时候，先将所有的顶级的container或者list的函数声明写出来
     if (level == 0):
-        line = "    void read_" + \
-            s.arg.replace('-', '_') + "(XCONFD_YANGTREE_T* yt);"
+        line = "    void read_" + s.arg.replace('-', '_') + "(XCONFD_YANGTREE_T* yt);"
         # 将当前的节点写入文件中
         fd.write(line + '\n')
     
-    # 填写函数实现，直接在另一个文件中填写函数实现
+    # 填写函数实现
     print_read_func_realize(fdcpp, s, module, line, 0)
 
     chs = [ch for ch in s.i_children
             if ch.keyword in ['container', 'list']
-            and (judge_if_uses_state(s) == 2 or judge_if_uses_state(s) == 4)]
-    
-    #chs += [ch for ch in ]
+            and (judge_if_uses_state(s) >= 2 and judge_if_uses_state(s) <= 4)]
     
     # 打印第二级read_functoin
     for prt_ch in chs:
         if prt_ch.keyword == "list":
+            if str(prt_ch.arg)[-1] != 's': print("[Warning]!!! list " + prt_ch.arg +" name must end of \"s\" !!!")
             line = "    void read_" + s.arg.replace('-','_') + "__" + prt_ch.arg.replace('-','_') + "(XCONFD_YANGTREE_T* yt, " + \
                 "std::vector<std::shared_ptr<" + get_struct_name(prt_ch.arg)[0:-1] + ">>& " + prt_ch.arg.replace('-', '_') + ");"
             fd.write(line + '\n')
@@ -1179,8 +1086,7 @@ def print_read_func_first(s, module, fd, fdcpp, prefix, path, mode, depth, llen,
                 "" + get_struct_name(prt_ch.arg) + "& " + prt_ch.arg.replace('-', '_') + ");"
             fd.write(line + '\n')
             print_read_func_realize(fdcpp, prt_ch, module, line, 1)
-        if prt_ch.keyword == "leaf":
-            line = print_get_leaf_realize(prt_ch, s.arg.replace('-','_') + "_." + prt_ch.arg.replace('-','_'))
+
 
 
 def judge_next_ctn(i_children, level):
@@ -1309,17 +1215,17 @@ def judge_if_uses_state(child_node):
     # 如果使用了uses，且只使用到了uses
     if(len(child_len) == 1 and len(child_all_len) == 0):
         return 1
-    # 如果使用了uses，且存在其他的数据节点
+    # 如果使用了一个uses，且存在其他的数据节点
     elif(len(child_len) == 1 and len(child_all_len) > 0):
         return 2
     # 如果使用了多个uses
     elif(len(child_len) >= 1):
         return 3
-    # 如果没有使用uses
-    elif(len(child_len) == 0):
+    # 如果没有使用uses，全部是其他节点
+    elif(len(child_len) == 0 and len(child_all_len) > 0):
         return 4
     else:
-        return 5
+        return -1
     
 def judge_ref_other_typefile(child_node):
     child_len = [ch for ch in child_node.substmts

@@ -13,14 +13,6 @@ namespace gnb_du
 namespace rcfd
 {
 
-typedef std::shared_ptr<PlmnIdInfo> PlmnIdInfoPtr;
-typedef std::vector<PlmnIdInfoPtr> PlmnIdInfoPtrVector;
-
-typedef struct structCellAccessInfo
-{
-    PlmnIdInfoPtrVector plmn_id_infos;
-    bool cell_rsrvd_for_other_use; 
-} CellAccessInfo;
 typedef struct structPlmnIdInfo
 {
     std::vector<PlmnIdPtr> plmn_ids;
@@ -30,25 +22,23 @@ typedef struct structPlmnIdInfo
     bool cell_rsrvd_for_operator_use; 
 } PlmnIdInfo;
 
-typedef struct structSib1
+typedef struct structCellSelInfo
 {
-    CellSelInfo cell_sel_info; 
-    CellAccessInfo cell_access_info; 
-    UeTimers ue_timers; 
-} Sib1;
+    std::shared_ptr<QRxLvlMinT> q_rx_lvl_min; 
+    std::shared_ptr<uint8_t> q_rx_lvl_min_offset; 
+    std::shared_ptr<QRxLvlMinT> q_rx_lvl_min_sul; 
+    std::shared_ptr<QQualMinT> q_qual_min; 
+    std::shared_ptr<uint8_t> q_qual_min_offset; 
+} CellSelInfo;
 
-typedef struct structMib
+typedef std::shared_ptr<PlmnIdInfo> PlmnIdInfoPtr;
+typedef std::vector<PlmnIdInfoPtr> PlmnIdInfoPtrVector;
+
+typedef struct structCellAccessInfo
 {
-    ScsCmnE scs_cmn; 
-    SsbScOffsetT ssb_sc_offset; 
-    PdcchCfgSib1 pdcch_cfg_sib1; 
-    bool cell_barred; 
-    bool intra_freq_resel; 
-} Mib;
-
-
-
-
+    PlmnIdInfoPtrVector plmn_id_infos;
+    bool cell_rsrvd_for_other_use; 
+} CellAccessInfo;
 
 typedef struct structUeTimers
 {
@@ -60,14 +50,6 @@ typedef struct structUeTimers
     N311E n311; 
     T319E t319; 
 } UeTimers;
-typedef struct structCellSelInfo
-{
-    std::shared_ptr<QRxLvlMinT> q_rx_lvl_min; 
-    std::shared_ptr<uint8_t> q_rx_lvl_min_offset; 
-    std::shared_ptr<QRxLvlMinT> q_rx_lvl_min_sul; 
-    std::shared_ptr<QQualMinT> q_qual_min; 
-    std::shared_ptr<uint8_t> q_qual_min_offset; 
-} CellSelInfo;
 
 typedef struct structPrach
 {
@@ -88,9 +70,21 @@ typedef struct structPdcchCfgSib1
     SsZeroT ss_zero; 
 } PdcchCfgSib1; 
 
+typedef struct structMib
+{
+    ScsCmnE scs_cmn; 
+    SsbScOffsetT ssb_sc_offset; 
+    PdcchCfgSib1 pdcch_cfg_sib1; 
+    bool cell_barred; 
+    bool intra_freq_resel; 
+} Mib;
 
-
-
+typedef struct structSib1
+{
+    CellSelInfo cell_sel_info; 
+    CellAccessInfo cell_access_info; 
+    UeTimers ue_timers; 
+} Sib1;
 
 class oam_agent_rcfd_cell_l1 : public allocator
 {

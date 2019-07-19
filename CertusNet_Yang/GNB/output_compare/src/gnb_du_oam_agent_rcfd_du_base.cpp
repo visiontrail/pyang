@@ -91,16 +91,14 @@ void oam_agent_rcfd_du_base::read_grp_sctp(XCONFD_YANGTREE_T* yt, Sctp& sctp)
     read_grp_sctp__cfg_params(cfg_params_yt, sctp.cfg_params);
 }
 
-void oam_agent_rcfd_du_base::read_grp_sctp__dst(XCONFD_YANGTREE_T* yt, IpAddr& dst)
+void oam_agent_rcfd_du_base::read_grp_sctp__dst(XCONFD_YANGTREE_T* yt, IpAddrPort& dst)
 {
-    xconfd_get(dst.port, uint32, "port", yt);
-    read_grp_ip_addr(yt, dst.ip_addr);
+    read_grp_ip_addr_port(yt, dst);
 }
 
-void oam_agent_rcfd_du_base::read_grp_sctp__src(XCONFD_YANGTREE_T* yt, IpAddr& src)
+void oam_agent_rcfd_du_base::read_grp_sctp__src(XCONFD_YANGTREE_T* yt, IpAddrPort& src)
 {
-    xconfd_get(src.port, uint32, "port", yt);
-    read_grp_ip_addr(yt, src.ip_addr);
+    read_grp_ip_addr_port(yt, src);
 }
 
 void oam_agent_rcfd_du_base::read_grp_sctp__cfg_params(XCONFD_YANGTREE_T* yt, CfgParams& cfg_params)
@@ -121,25 +119,25 @@ void oam_agent_rcfd_du_base::read_grp_log(XCONFD_YANGTREE_T* yt, Log& log)
     read_grp_log__ngp_modules(ngp_modules_yt, log.ngp_modules);
 }
 
-void oam_agent_rcfd_du_base::read_grp_log__du_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<DuModules>>& du_modules)
+void oam_agent_rcfd_du_base::read_grp_log__du_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<DuModuleLog>>& du_modules)
 {
     XCONFD_YANG_TREE_LIST_FOREACH(yt, du_modules_yt)
     {
-        auto du_module = std::make_shared<DuModules>();
-        xconfd_get(du_module.module_id, enum, "module-id", yt);
-        xconfd_get(du_module.log_lvl, enum, "log-lvl", yt);
-        du_modules.push_back(du_module);
+        auto du_module_log = std::make_shared<DuModuleLog>();
+        xconfd_get(du_module_log->module_id, enum, "module-id", yt);
+        xconfd_get(du_module_log->log_lvl, enum, "log-lvl", yt);
+        du_modules.push_back(du_module_log);
     }
 }
 
-void oam_agent_rcfd_du_base::read_grp_log__ngp_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<NgpModules>>& ngp_modules)
+void oam_agent_rcfd_du_base::read_grp_log__ngp_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<NgpModuleLog>>& ngp_modules)
 {
     XCONFD_YANG_TREE_LIST_FOREACH(yt, ngp_modules_yt)
     {
-        auto ngp_module = std::make_shared<NgpModules>();
-        xconfd_get(ngp_module.module_id, enum, "module-id", yt);
-        xconfd_get(ngp_module.log_lvl, enum, "log-lvl", yt);
-        ngp_modules.push_back(ngp_module);
+        auto ngp_module_log = std::make_shared<NgpModuleLog>();
+        xconfd_get(ngp_module_log->module_id, enum, "module-id", yt);
+        xconfd_get(ngp_module_log->log_lvl, enum, "log-lvl", yt);
+        ngp_modules.push_back(ngp_module_log);
     }
 }
 

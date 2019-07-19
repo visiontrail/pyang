@@ -3,11 +3,9 @@ submodule certus-5gnr-du-cell-schd {
         prefix cgdcs;
     }
     
-    import tailf-common {
-        prefix tailf;
-    }
-    import certus-5gnr-types-for-cell {
-        prefix cgtfc;
+    import tailf-common { prefix tailf; }
+    import certus-5gnr-cell-types {
+        prefix cgcts;
         revision-date 2019-06-20;
     }
 
@@ -21,11 +19,11 @@ submodule certus-5gnr-du-cell-schd {
     
     grouping scs-spec-carrier {
         leaf offset-to-carrier {
-            type cgtfc:offset-point-a-carrier-t;
+            type cgcts:offset-point-a-carrier-t;
             description "Offset To Carrier";
         }
         leaf scs {
-            type cgtfc:scs-e;
+            type cgcts:scs-e;
             description "Subcarrier Spacing";
         }
     }
@@ -35,7 +33,7 @@ submodule certus-5gnr-du-cell-schd {
             description "PRACH Configuration Index";
         }
         leaf msg1-fdm {
-            type cgtfc:msg1-fdm-e;
+            type cgcts:msg1-fdm-e;
             description "Transmission Occasion Number FDMed Per Time Instance";
         }
         leaf msg1-freq-start {
@@ -51,15 +49,15 @@ submodule certus-5gnr-du-cell-schd {
             description "Preamble Received Target Power";
         }
         leaf preamble-trans-max {
-            type cgtfc:preamble-trans-max-e;
+            type cgcts:preamble-trans-max-e;
             description "Max Preamble Transmission";
         }
         leaf power-ramp-step {
-            type cgtfc:power-ramp-step-e;
+            type cgcts:power-ramp-step-e;
             description "Power Ramping Steps";
         }
         leaf ra-rsp-win {
-            type cgtfc:ra-rsp-win-e;
+            type cgcts:ra-rsp-win-e;
             description "RAR Window Length";
         }
         
@@ -67,7 +65,7 @@ submodule certus-5gnr-du-cell-schd {
     }
     grouping rach-grpb {
         leaf ra-msg3-size-grp-a {
-            type cgtfc:ra-msg3-size-grp-a-e;
+            type cgcts:ra-msg3-size-grp-a-e;
             description "Msg3 Size With GroupA Preamble";
         }
         leaf num-ra-preamble-grp-a {
@@ -75,13 +73,13 @@ submodule certus-5gnr-du-cell-schd {
             description "Number Of CB Preambles Per SSB In Group A";
         }
         leaf msg-power-offset-grp-b {
-            type cgtfc:msg-power-offset-grp-b-e;
+            type cgcts:msg-power-offset-grp-b-e;
             description "Threshold For Preamble Selection";
         }
     }
     grouping coreset {
         leaf id {
-            type cgtfc:coreset-id-t;
+            type cgcts:coreset-id-t;
             description "Control Resource Set ID";
         }
         leaf freq-domain-res {
@@ -97,11 +95,11 @@ submodule certus-5gnr-du-cell-schd {
         container cce-reg-mapping-interleaved {
             if-feature optional;
             leaf reg-bndl-size {
-                type cgtfc:reg-bndl-size-e;
+                type cgcts:reg-bndl-size-e;
                 description "Resource Element Groups Bundled Size";
             }
             leaf interlvr-size {
-                type cgtfc:interlvr-size-e;
+                type cgcts:interlvr-size-e;
                 description "Interleaver Size";
             }
             leaf shift-idx {
@@ -110,7 +108,7 @@ submodule certus-5gnr-du-cell-schd {
             
             description "Mapping Of Control CCEs To REGs Is Interleaved";
         }
-        leaf precoder-granularity { type cgtfc:precoder-granularity-e; }
+        leaf precoder-granularity { type cgcts:precoder-granularity-e; }
         leaf dmrs-scramble-id {
             if-feature optional;
             type uint16;
@@ -119,13 +117,13 @@ submodule certus-5gnr-du-cell-schd {
         container tci-state-info {
             if-feature optional;
             leaf-list to-add {
-                type cgtfc:tci-state-id-t;
+                type cgcts:tci-state-id-t;
                 min-elements 0;
                 max-elements 64;
                 description "TCI State IDs To Add";
             }
             leaf-list to-rel {
-                type cgtfc:tci-state-id-t;
+                type cgcts:tci-state-id-t;
                 min-elements 0;
                 max-elements 64;
                 description "TCI State IDs To Release";
@@ -140,15 +138,15 @@ submodule certus-5gnr-du-cell-schd {
     }
     grouping search-space {
         leaf id {
-            type cgtfc:ss-id-t;
+            type cgcts:ss-id-t;
             description "Search Space ID";
         }
         leaf coreset-id {
-            type cgtfc:coreset-id-t;
+            type cgcts:coreset-id-t;
             description "CORESET ID";
         }
         leaf mon-slot-perd-offset-type {
-            type cgtfc:mon-slot-perd-offset-type-e;
+            type cgcts:mon-slot-perd-offset-type-e;
         }
         leaf mon-slot-perd-offset {
             type uint16 { range "0..2559"; }
@@ -160,17 +158,17 @@ submodule certus-5gnr-du-cell-schd {
             description "Monitoring Symbols Within Slot";
         }
         container aggr-lvl-candidates-num {
-            leaf aggr-lvl1 { type cgtfc:candidates-num-e; }
-            leaf aggr-lvl2 { type cgtfc:candidates-num-e; }
-            leaf aggr-lvl4 { type cgtfc:candidates-num-e; }
-            leaf aggr-lvl8 { type cgtfc:candidates-num-e; }
-            leaf aggr-lvl16 { type cgtfc:candidates-num-e; }
+            leaf aggr-lvl1 { type cgcts:candidates-num-e; }
+            leaf aggr-lvl2 { type cgcts:candidates-num-e; }
+            leaf aggr-lvl4 { type cgcts:candidates-num-e; }
+            leaf aggr-lvl8 { type cgcts:candidates-num-e; }
+            leaf aggr-lvl16 { type cgcts:candidates-num-e; }
             
             description "Number Of PDCCH Candidates Per Aggregation Level";
         }
         leaf dci-format {
             if-feature optional;
-            type cgtfc:dci-format-e;
+            type cgcts:dci-format-e;
         }
     }
     
@@ -181,15 +179,15 @@ submodule certus-5gnr-du-cell-schd {
             description "Absolute Frequency PointA";
         }
         leaf abs-arfcn-point-a {
-            type cgtfc:arfcn-t;
+            type cgcts:arfcn-t;
             description "Absolute ARFCN PointA";
         }
         leaf nr-arfcn {
-            type cgtfc:arfcn-t;
+            type cgcts:arfcn-t;
             description "NR ARFCN";
         }
         leaf channel-bw {
-            type cgtfc:channel-bw-e;
+            type cgcts:channel-bw-e;
             description "Channel Bandwidth";
         }
         leaf-list nr-freq-bands {
@@ -208,7 +206,7 @@ submodule certus-5gnr-du-cell-schd {
     grouping bwp-gen {
         leaf start-rb { type uint16; }
         leaf rb-num { type uint16; }
-        leaf scs { type cgtfc:scs-e; }
+        leaf scs { type cgcts:scs-e; }
         leaf cp-extended {
             type empty;
             description "Cyclic Prefix Extended";
@@ -224,7 +222,7 @@ submodule certus-5gnr-du-cell-schd {
             description "Total Number Of Preambles For RA";
         }
         leaf ssb-per-rach-occ {
-            type cgtfc:ssb-per-rach-occ-e;
+            type cgcts:ssb-per-rach-occ-e;
             description "SSBs Number Per RACH Occasion";
         }
         leaf cb-preamble-per-ssb {
@@ -236,11 +234,11 @@ submodule certus-5gnr-du-cell-schd {
             uses rach-grpb;
         }
         leaf ra-cont-res-tmr {
-            type cgtfc:ra-cont-res-tmr-e;
+            type cgcts:ra-cont-res-tmr-e;
             description "RA Contention Resolution Timer";
         }
         leaf prach-root-seq-idx-type {
-            type cgtfc:prach-root-seq-idx-type-e;
+            type cgcts:prach-root-seq-idx-type-e;
             description "PRACH Root Sequence Index Type L839/L139";
         }
         leaf prach-root-seq-idx {
@@ -248,11 +246,11 @@ submodule certus-5gnr-du-cell-schd {
             description "PRACH Root Sequence Index";
         }
         leaf msg1-scs {
-            type cgtfc:scs-e;
+            type cgcts:scs-e;
             description "Msg1 Subcarrier Spacing";
         }
         leaf restr-set {
-            type cgtfc:restr-set-e;
+            type cgcts:restr-set-e;
             description "Restricted Set Configuration";
         }
         leaf msg3-tran-precoding {
@@ -299,7 +297,7 @@ submodule certus-5gnr-du-cell-schd {
             description "PUCCH Resource Common";
         }
         leaf grp-hopping {
-            type cgtfc:pucch-grp-hopping-e;
+            type cgcts:pucch-grp-hopping-e;
             description "PUCCH Group Hopping";
         }
         leaf hopping-id {
@@ -324,32 +322,32 @@ submodule certus-5gnr-du-cell-schd {
         }
         leaf ss-sib1 {
             if-feature optional;
-            type cgtfc:ss-id-t;
+            type cgcts:ss-id-t;
             description "Search Space SIB1";
         }
         leaf ss-other-si {
             if-feature optional;
-            type cgtfc:ss-id-t;
+            type cgcts:ss-id-t;
             description "Search Space Other SI";
         }
         leaf ss-paging {
             if-feature optional;
-            type cgtfc:ss-id-t;
+            type cgcts:ss-id-t;
             description "Paging Search Space";
         }
         leaf ss-ra {
             if-feature optional;
-            type cgtfc:ss-id-t;
+            type cgcts:ss-id-t;
             description "RA Search Space";
         }
         leaf coreset-zero {
             if-feature optional;
-            type cgtfc:coreset-zero-t;
+            type cgcts:coreset-zero-t;
             description "Control Resource Set With ID #0";
         }
         leaf ss-zero {
             if-feature optional;
-            type cgtfc:ss-zero-t;
+            type cgcts:ss-zero-t;
             description "Search Space With ID #0";
         }
         description "PDCCH Common Configuration";
@@ -404,11 +402,11 @@ submodule certus-5gnr-du-cell-schd {
         }
         leaf abs-arfcn-ssb {
             if-feature optional;
-            type cgtfc:arfcn-t;
+            type cgcts:arfcn-t;
             description "Absolute ARFCN Of The SSB";
         }
         leaf offset-to-point-a {
-            type cgtfc:offset-point-a-carrier-t;
+            type cgcts:offset-point-a-carrier-t;
             description "Offset To PointA";
         }
     }
@@ -427,42 +425,42 @@ submodule certus-5gnr-du-cell-schd {
     }
     grouping ul-bwp {
         leaf bwp-id {
-            type cgtfc:bwp-id-t;
+            type cgcts:bwp-id-t;
             description "Bandwidth Part ID";
         }
         uses ul-bwp-cmn;
     }
     grouping dl-bwp {
         leaf bwp-id {
-            type cgtfc:bwp-id-t;
+            type cgcts:bwp-id-t;
             description "Bandwidth Part ID";
         }
         uses dl-bwp-cmn;
     }
     grouping tdd-ul-dl-pattern {
         leaf dl-syms-num {
-            type cgtfc:syms-num-t;
+            type cgcts:syms-num-t;
             description "Number Of Downlink Symbols";
         }
         leaf dl-slots-num {
-            type cgtfc:slots-num-t;
+            type cgcts:slots-num-t;
             description "Number Of Downlink Slots";
         }
         leaf ul-syms-num {
-            type cgtfc:syms-num-t;
+            type cgcts:syms-num-t;
             description "Number Of Uplink Symbols";
         }
         leaf ul-slots-num {
-            type cgtfc:slots-num-t;
+            type cgcts:slots-num-t;
             description "Number Of Uplink Slots";
         }
         leaf trans-perd {
-            type cgtfc:trans-perd-e;
+            type cgcts:trans-perd-e;
             description 'Dl/UL Transmission Periodicity';
         }
         leaf trans-perd-v1530 {
             if-feature optional;
-            type cgtfc:trans-perd-v1530-e;
+            type cgcts:trans-perd-v1530-e;
             description 'Dl/UL Transmission Periodicity-v1530';
         }
     }
@@ -481,7 +479,7 @@ submodule certus-5gnr-du-cell-schd {
             uses ul-bwp-cmn;
         }
         leaf time-alignment-timer {
-            type cgtfc:alignment-timer-e;
+            type cgcts:alignment-timer-e;
         }
         container ue-harq-info {
             leaf max-harq { type uint8; }
@@ -531,10 +529,10 @@ submodule certus-5gnr-du-cell-schd {
     }
     grouping ss-pbch {
         leaf scs-cmn {
-            type cgtfc:scs-cmn-e;
+            type cgcts:scs-cmn-e;
         }
         leaf ssb-sc-offset {
-            type cgtfc:ssb-sc-offset-t;
+            type cgcts:ssb-sc-offset-t;
             default 0;
             description "SSB Subcarrier Offset";
         }
@@ -544,7 +542,7 @@ submodule certus-5gnr-du-cell-schd {
             description 'SS/PBCH Burst Number Per Set';
         }
         leaf ssb-scell-perd{
-            type cgtfc:ssb-scell-perd-e;
+            type cgcts:ssb-scell-perd-e;
             default SSP-MS20;
          }
         leaf ssb-power {
@@ -556,7 +554,7 @@ submodule certus-5gnr-du-cell-schd {
     }
     grouping tdd-cfg-cmn {
         leaf ref-scs {
-            type cgtfc:scs-e;
+            type cgcts:scs-e;
             description "Reference Subcarrier Spacing";
         }
         container pattern1 {
@@ -605,22 +603,22 @@ submodule certus-5gnr-du-cell-schd {
             description "Cyclic Prefix UL Extended";
         }
         leaf scs {
-            type cgtfc:scs-e;
+            type cgcts:scs-e;
             description "Subcarrier Spacing";
         }
         leaf dmrs-type-a-pos {
-            type cgtfc:dmrs-type-a-pos-e;
+            type cgcts:dmrs-type-a-pos-e;
             description "DMRS TypeA Position";
         }
         leaf slot-format {
             type uint8 { range "0..6"; }
         }
         leaf harq-ack-cb-type {
-            type cgtfc:harq-ack-cb-type-e;
+            type cgcts:harq-ack-cb-type-e;
             description "HARQ-ACK Codebook Type";
         }
         leaf bwp-inactive-timer {
-            type cgtfc:bwp-inactive-timer-e;
+            type cgcts:bwp-inactive-timer-e;
             description "BWP Inactive Timer";
         }
         leaf scell-cmn-cfg-in-sib1 {
@@ -667,11 +665,11 @@ submodule certus-5gnr-du-cell-schd {
         container ue-bsr-timers {
             leaf perd-bsr-timer {
                 if-feature optional;
-                type cgtfc:perd-bsr-timer-e;
+                type cgcts:perd-bsr-timer-e;
                 description "Periodic BSR Timer";
             }
             leaf retx-bsr-timer {
-                type cgtfc:retx-bsr-timer-e;
+                type cgcts:retx-bsr-timer-e;
                 description "Retransmission BSR Timer";
             }
             description "UE BSR Configuration";

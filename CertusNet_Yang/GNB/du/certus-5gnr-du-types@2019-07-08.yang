@@ -1,6 +1,6 @@
-module certus-5gnr-types-for-du {
-    namespace "http://certusnet.com/5gnr/certus-5gnr-types-for-du";
-    prefix cgtfd;
+module certus-5gnr-du-types {
+    namespace "http://certusnet.com/5gnr/certus-5gnr-du-types";
+    prefix cgdts;
 
     import ietf-inet-types { prefix inet; }
     
@@ -86,5 +86,10 @@ module certus-5gnr-types-for-du {
             if-feature optional;
             type inet:ipv6-address;
         }
+    }
+    
+    grouping ip-addr-port {
+        uses ip-addr;
+        leaf port { type uint32; }
     }
 }

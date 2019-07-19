@@ -2,8 +2,8 @@ module certus-5gnr-du-cells {
     namespace "http://certusnet.com/5gnr/du/certus-5gnr-du-cells";
     prefix cgdcs;
     
-    import certus-5gnr-types-for-cell {
-        prefix cgtfc;
+    import certus-5gnr-cell-types {
+        prefix cgcts;
         revision-date 2019-06-20;
     }
     include certus-5gnr-du-cell-base {
@@ -33,20 +33,20 @@ module certus-5gnr-du-cells {
     
     grouping state {
         leaf admin-state {
-            type cgtfc:admin-state-e;
+            type cgcts:admin-state-e;
             default BLOCKED;
             
             description "Admininstration State";
         }
         leaf oper-state {
-            type cgtfc:oper-state-e;
+            type cgcts:oper-state-e;
             default UNACTIVATED;
             config false;
             
             description "Operation State";
         }
         leaf avail-state {
-            type cgtfc:avail-state-e;
+            type cgcts:avail-state-e;
             default UNAVAILABLE;
             config false;
             

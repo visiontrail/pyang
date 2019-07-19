@@ -19,23 +19,23 @@ typedef struct structSNssai
     SdT sd; 
 } SNssai;
 
+typedef struct structSiPerd
+{
+    std::shared_ptr<SiPerdE> sib2_perd;
+    std::shared_ptr<SiPerdE> sib3_perd;
+} SiPerd;
+
+typedef struct structNrCgi
+{
+    PlmnId plmn_id;
+    NrCellIdT nr_cell_id;
+} NrCgi;
+
 typedef struct structServedPlmn
 {
     PlmnId plmn_id; 
     std::vector<std::shared_ptr<SNssai>> s_nssais;
 } ServedPlmn;
-
-typedef struct structNrCgi
-{
-    PlmnId plmn_id;
-    NrCellIdT nr_cell_id; 
-} NrCgi; 
-
-typedef struct structSiPerd
-{
-    std::shared_ptr<SiPerdE> sib2_perd;
-    std::shared_ptr<SiPerdE> sib3_perd;
-} SiPerd; 
 
 class oam_agent_rcfd_cell_base : public allocator
 {

@@ -26,14 +26,6 @@ typedef struct structNsCell
     uint64_t ul_sla_trgt_rate; 
 } NsCell;
 
-typedef struct structNs
-{
-    NsAgentTypeE agent_type; 
-    std::shared_ptr<IpAddr> local_sm; 
-    std::shared_ptr<IpAddr> remote_sm; 
-    std::vector<std::shared_ptr<Nsi>> nsis;
-} Ns;
-
 typedef struct structNsi
 {
     uint8_t nsi_id; 
@@ -41,29 +33,21 @@ typedef struct structNsi
     std::vector<std::shared_ptr<NsCell>> cells;
 } Nsi;
 
-typedef struct structLocalSm
-{
-    IpAddr ip_addr;
-    uint32_t port; 
-} LocalSm; 
-
-typedef struct structRemoteSm
-{
-    IpAddr ip_addr;
-    uint32_t port; 
-} RemoteSm; 
-
 class oam_agent_rcfd_du_ns : public allocator
 {
 public:
+   NsAgentTypeE agent_type_;
+   IpAddrPort local_sm_;
+   IpAddrPort remote_sm_;
+   std::vector<std::shared_ptr<Nsi>> nsis_;
 
-    void read_grp_ns_cell(XCONFD_YANGTREE_T* yt, NsCell& ns_cell);
-    void read_grp_ns(XCONFD_YANGTREE_T* yt, Ns& ns);
-    void read_grp_ns__local_sm(XCONFD_YANGTREE_T* yt, std::shared_ptr<IpAddr>& local_sm);
-    void read_grp_ns__remote_sm(XCONFD_YANGTREE_T* yt, std::shared_ptr<IpAddr>& remote_sm);
-    void read_grp_ns__nsis(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<Nsi>>& nsis);
+private:
+    void read_local_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& local_sm);
+    void read_remote_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& remote_sm);
+    void read_nsis(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<Nsi>>& nsis);
     void read_grp_nsi(XCONFD_YANGTREE_T* yt, Nsi& nsi);
     void read_grp_nsi__cells(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<NsCell>>& cells);
+    void read_grp_ns_cell(XCONFD_YANGTREE_T* yt, NsCell& ns_cell);
 
 public:
     oam_agent_rcfd_du_ns(XCONFD_YANGTREE_T* yt);
