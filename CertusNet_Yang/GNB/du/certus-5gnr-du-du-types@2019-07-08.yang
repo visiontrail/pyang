@@ -1,6 +1,6 @@
-module certus-5gnr-du-types {
+module certus-5gnr-du-du-types {
     namespace "http://certusnet.com/5gnr/certus-5gnr-du-types";
-    prefix cgdts;
+    prefix cgddts;
 
     import ietf-inet-types { prefix inet; }
     

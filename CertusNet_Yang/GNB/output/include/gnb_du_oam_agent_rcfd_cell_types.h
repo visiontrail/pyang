@@ -1,7 +1,8 @@
-/*
- * filename: gnb_du_oam_agent_rcfd_cell_types.h 
- * This header file contains implementation of OAM Agent RConfD Generate by Tools 
-*/ 
+/********************************************************************************* 
+ * Filename: gnb_du_oam_agent_rcfd_cell_types.h 
+ * Description: This header file contains implementation of OAM Agent RConfD.
+ * Generation time: 2019-07-20 14:39:37
+*********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__
 #define __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__

@@ -1,7 +1,8 @@
-/*
- * filename: gnb_du_oam_agent_rcfd_cell_schd.cpp 
- * This header file contains implementation of OAM Agent RConfD Generate by Tools 
-*/ 
+/*********************************************************************************
+ * Filename: gnb_du_oam_agent_rcfd_cell_schd.cpp 
+ * Description: This file implementation of OAM Agent RConfD.
+ * Generation time: 2019-07-20 14:39:37
+*********************************************************************************/ 
 
 #include "gnb_du_oam_agent_rcfd_cell_schd.h" 
 
@@ -373,7 +374,7 @@ void oam_agent_rcfd_cell_schd::read_grp_sul(XCONFD_YANGTREE_T* yt, Sul& sul)
 void oam_agent_rcfd_cell_schd::read_grp_sul__freq_info(XCONFD_YANGTREE_T* yt, std::shared_ptr<UlFreqInfo>& freq_info)
 {
     if (!yt) return;
-    freq_info = std::make_shared<FreqInfo>();
+    freq_info = std::make_shared<UlFreqInfo>();
 
     read_grp_ul_freq_info(yt, *freq_info);
 }
@@ -512,7 +513,7 @@ void oam_agent_rcfd_cell_schd::read_grp_dl_cfg_cmn__freq_info(XCONFD_YANGTREE_T*
 void oam_agent_rcfd_cell_schd::read_grp_dl_cfg_cmn__initial_bwp(XCONFD_YANGTREE_T* yt, std::shared_ptr<DlBwpCmn>& initial_bwp)
 {
     if (!yt) return;
-    initial_bwp = std::make_shared<InitialBwp>();
+    initial_bwp = std::make_shared<DlBwpCmn>();
 
     read_grp_dl_bwp_cmn(yt, *initial_bwp);
 }
@@ -549,7 +550,7 @@ void oam_agent_rcfd_cell_schd::read_grp_tdd_cfg_cmn__pattern1(XCONFD_YANGTREE_T*
 void oam_agent_rcfd_cell_schd::read_grp_tdd_cfg_cmn__pattern2(XCONFD_YANGTREE_T* yt, std::shared_ptr<TddUlDlPattern>& pattern2)
 {
     if (!yt) return;
-    pattern2 = std::make_shared<Pattern2>();
+    pattern2 = std::make_shared<TddUlDlPattern>();
 
     read_grp_tdd_ul_dl_pattern(yt, *pattern2);
 }
@@ -569,7 +570,7 @@ void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn(XCONFD_YANGTREE_T* yt, UlCfgC
 void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn__freq_info(XCONFD_YANGTREE_T* yt, std::shared_ptr<UlFreqInfo>& freq_info)
 {
     if (!yt) return;
-    freq_info = std::make_shared<FreqInfo>();
+    freq_info = std::make_shared<UlFreqInfo>();
 
     read_grp_ul_freq_info(yt, *freq_info);
 }

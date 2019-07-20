@@ -3,8 +3,8 @@ submodule certus-5gnr-du-cell-channel {
         prefix cgdcs;
     }
 
-    import certus-5gnr-cell-types {
-        prefix cgcts;
+    import certus-5gnr-du-cell-types {
+        prefix cgdcts;
         revision-date 2019-06-20;
     }
 
@@ -19,17 +19,17 @@ submodule certus-5gnr-du-cell-channel {
     grouping cell-channel {
         container pcch {
             leaf default-paging-cycle {
-                type cgcts:paging-cycle-e;
+                type cgdcts:paging-cycle-e;
             }
             leaf paging-frame-offset-type {
-                type cgcts:paging-frame-offset-type-e;
+                type cgdcts:paging-frame-offset-type-e;
             }
             leaf paging-frame-offset {
                 type uint8 { range "0..15"; }
                 description "Total Paging Frames And Paging Frame Offset";
             }
             leaf ns {
-                type cgcts:ns-e;
+                type cgdcts:ns-e;
                 description "Number Of Paging Occasions Per Paging Frame";
             }
             leaf f-pdcch-mon-occ-of-po-present {
@@ -39,18 +39,18 @@ submodule certus-5gnr-du-cell-channel {
         }
         container bcch {
             leaf modi-perd-coeff {
-                type cgcts:modi-perd-coeff-e;
+                type cgdcts:modi-perd-coeff-e;
                 description "Modification Period Coeff";
             }
             leaf si-win-len {
-                 type cgcts:si-win-len-e;
+                 type cgdcts:si-win-len-e;
                  description "SI Window Length";
             }
         }
         container pusch-scell {
             leaf max-cbgs-per-tb {
                 if-feature optional;
-                type cgcts:max-cbgs-per-tb-e;
+                type cgdcts:max-cbgs-per-tb-e;
                 description "Max Code Block Groups Per Transport Block";
             }
             leaf limited-buf-rm {
@@ -59,13 +59,13 @@ submodule certus-5gnr-du-cell-channel {
             }
             leaf x-overhead {
                 if-feature optional;
-                type cgcts:x-overhead-e;
+                type cgdcts:x-overhead-e;
             }
         }
         container pdsch-scell {
             leaf max-cbgs-per-tb {
                 if-feature optional;
-                type cgcts:max-cbgs-per-tb-e;
+                type cgdcts:max-cbgs-per-tb-e;
                 description "Max Code Block Groups Per Transport Block";
             }
             leaf cbg-flush-ind {
@@ -74,11 +74,11 @@ submodule certus-5gnr-du-cell-channel {
             }
             leaf x-overhead {
                 if-feature optional;
-                type cgcts:x-overhead-e;
+                type cgdcts:x-overhead-e;
             }
             leaf harq-processes-num {
                 if-feature optional;
-                type cgcts:pdsch-harq-processes-num-e;
+                type cgdcts:pdsch-harq-processes-num-e;
                 description "The Number Of HARQ Processes";
             }
             leaf pucch-cell-idx {

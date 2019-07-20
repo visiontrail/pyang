@@ -3,8 +3,8 @@ submodule certus-5gnr-du-du-ns {
         prefix cgdu;
     }
 
-    import certus-5gnr-du-types {
-        prefix cgdts;
+    import certus-5gnr-du-du-types {
+        prefix cgddts;
         revision-date 2019-07-08;
     }
 
@@ -48,14 +48,14 @@ submodule certus-5gnr-du-du-ns {
     
     grouping ns {
         leaf agent-type {
-            type cgdts:ns-agent-type-e;
+            type cgddts:ns-agent-type-e;
             default NS-DISABLED;
         }
         container local-sm {
-            uses cgdts:ip-addr-port;
+            uses cgddts:ip-addr-port;
         }
         container remote-sm {
-            uses cgdts:ip-addr-port;
+            uses cgddts:ip-addr-port;
         }
         list nsis {
             key nsi-id;

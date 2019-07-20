@@ -19,7 +19,7 @@
                 "-p",
                 "/usr/local/confd/src/confd/yang",
                 "-o",
-                "CertusNet_Yang/GNB/output/inc/gnb_du_oam_agent_rcfd_cell_base.h"
+                "CertusNet_Yang/GNB/output/include/gnb_du_oam_agent_rcfd_cell_schd.h"
             ],
         },
         {
@@ -35,7 +35,7 @@
                 "-p",
                 "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_du/5gran/radisys-du/src/du_app/oam_agent/yang/cell",
                 "-o",
-                "~/Desktop/WorkSpace/schd.h"
+                "CertusNet_Yang/GNB/output/include/gnb_du_oam_agent_rcfd_cell_l1.h"
             ],
         },
         {
@@ -51,7 +51,7 @@
                 "-p",
                 "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_du/5gran/radisys-du/src/du_app/oam_agent/yang/du",
                 "-o",
-                "~/Desktop/WorkSpace/schd.h"
+                "CertusNet_Yang/GNB/output/include/gnb_du_oam_agent_rcfd_du_base.h"
             ],
         },
         {
@@ -67,7 +67,7 @@
                 "-p",
                 "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_du/5gran/radisys-du/src/du_app/oam_agent/yang/cell",
                 "-o",
-                "~/Desktop/WorkSpace/113.c"
+                "CertusNet_Yang/GNB/output/include/gnb_du_oam_agent_rcfd_du_base.h"
             ],
         }
     ]

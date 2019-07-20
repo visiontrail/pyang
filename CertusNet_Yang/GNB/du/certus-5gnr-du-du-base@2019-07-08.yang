@@ -3,9 +3,8 @@ submodule certus-5gnr-du-du-base {
         prefix cgdu;
     }
     
-    import tailf-common { prefix tailf; }
-    import certus-5gnr-du-types {
-        prefix cgdts;
+    import certus-5gnr-du-du-types {
+        prefix cgddts;
         revision-date 2019-07-08;
     }
     
@@ -19,10 +18,10 @@ submodule certus-5gnr-du-du-base {
 
     grouping sctp {
         container dst {
-            uses cgdts:ip-addr-port;
+            uses cgddts:ip-addr-port;
         }
         container src {
-            uses cgdts:ip-addr-port;
+            uses cgddts:ip-addr-port;
         }
         container cfg-params {
             leaf num-outbound-streams { type uint16; }
@@ -59,17 +58,17 @@ submodule certus-5gnr-du-du-base {
         }
     }
     grouping du-module-log {
-        leaf module-id { type cgdts:du-module-id-e; }
+        leaf module-id { type cgddts:du-module-id-e; }
         leaf log-lvl {
-            type cgdts:log-lvl-e;
-            default LL-OFF;
+            type cgddts:log-lvl-e;
+            default LL-TRACE;
         }
     }
     grouping ngp-module-log {
-        leaf module-id { type cgdts:ngp-module-id-e; }
+        leaf module-id { type cgddts:ngp-module-id-e; }
         leaf log-lvl {
-            type cgdts:log-lvl-e;
-            default LL-OFF;
+            type cgddts:log-lvl-e;
+            default LL-TRACE;
         }
     }
     grouping log {
@@ -91,9 +90,7 @@ submodule certus-5gnr-du-du-base {
     grouping du-base {
         leaf gnb-du-id {
             type uint64;
-            tailf:validate "gnb-du-id-check" {
-                tailf:dependency ".";
-            }
+            must "band(., 15) = 0";
         }
         leaf gnb-du-name {
             if-feature optional;
@@ -112,7 +109,7 @@ submodule certus-5gnr-du-du-base {
             uses sctp;
         }
         container egtpu {
-            uses cgdts:ip-addr;
+            uses cgddts:ip-addr;
             leaf teid-min { type uint32; }
             leaf teid-max { type uint32; }
         }

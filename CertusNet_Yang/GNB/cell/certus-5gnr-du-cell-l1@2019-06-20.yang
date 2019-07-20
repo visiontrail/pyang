@@ -3,9 +3,8 @@ submodule certus-5gnr-du-cell-l1 {
         prefix cgdcs;
     }
 
-    import tailf-common { prefix tailf; }
-    import certus-5gnr-cell-types {
-        prefix cgcts;
+    import certus-5gnr-du-cell-types {
+        prefix cgdcts;
         revision-date 2019-06-20;
     }
 
@@ -19,15 +18,13 @@ submodule certus-5gnr-du-cell-l1 {
     grouping plmn-id-info {
         list plmn-ids {
             key "mcc mnc";
-            uses cgcts:plmn-id;
+            uses cgdcts:plmn-id;
             min-elements 1;
             max-elements 6;
         }
         leaf nr-cell-id {
-            type cgcts:nr-cell-id-t;
-            tailf:validate "nr-cell-id-check" {
-                tailf:dependency ".";
-            }
+            type cgdcts:nr-cell-id-t;
+            must "band(., 15) = 0";
         }
         leaf tac {
             if-feature optional;
@@ -49,7 +46,7 @@ submodule certus-5gnr-du-cell-l1 {
     grouping cell-sel-info {
         leaf q-rx-lvl-min {
             if-feature optional;
-            type cgcts:q-rx-lvl-min-t;
+            type cgdcts:q-rx-lvl-min-t;
             description "Minimum Received RSRP Level";
         }
         leaf q-rx-lvl-min-offset {
@@ -59,12 +56,12 @@ submodule certus-5gnr-du-cell-l1 {
         }
         leaf q-rx-lvl-min-sul {
             if-feature optional;
-            type cgcts:q-rx-lvl-min-t;
+            type cgdcts:q-rx-lvl-min-t;
             description "Minimum Received RSRP Level Of SUL";
         }
         leaf q-qual-min {
             if-feature optional;
-            type cgcts:q-qual-min-t;
+            type cgdcts:q-qual-min-t;
             description "Minimum Received RSRQ Level";
         }
         leaf q-qual-min-offset {
@@ -87,13 +84,13 @@ submodule certus-5gnr-du-cell-l1 {
         }
     }
     grouping ue-timers {
-        leaf t300 { type cgcts:t300-e; }
-        leaf t301 { type cgcts:t301-e; }
-        leaf t310 { type cgcts:t310-e; }
-        leaf n310 { type cgcts:n310-e; }
-        leaf t311 { type cgcts:t311-e; }
-        leaf n311 { type cgcts:n311-e; }
-        leaf t319 { type cgcts:t319-e; }
+        leaf t300 { type cgdcts:t300-e; }
+        leaf t301 { type cgdcts:t301-e; }
+        leaf t310 { type cgdcts:t310-e; }
+        leaf n310 { type cgdcts:n310-e; }
+        leaf t311 { type cgdcts:t311-e; }
+        leaf n311 { type cgdcts:n311-e; }
+        leaf t319 { type cgdcts:t319-e; }
     }
     
 
@@ -117,30 +114,30 @@ submodule certus-5gnr-du-cell-l1 {
             type uint8 { range "0..94"; }
             default 0;
         }
-        leaf scs { type cgcts:scs-e; }
-        leaf fdm { type cgcts:msg1-fdm-e; }
+        leaf scs { type cgdcts:scs-e; }
+        leaf fdm { type cgdcts:msg1-fdm-e; }
         leaf ssb-per-rach-occ {
-            type cgcts:ssb-per-rach-occ-e;
+            type cgdcts:ssb-per-rach-occ-e;
             description "SSBs Number Per RACH Occasion";
         }
     }
     grouping mib {
         leaf scs-cmn {
-            type cgcts:scs-cmn-e;
+            type cgdcts:scs-cmn-e;
             description "Subcarrier Spacing Common";
         }
         leaf ssb-sc-offset {
-            type cgcts:ssb-sc-offset-t;
+            type cgdcts:ssb-sc-offset-t;
             default 0;
             description "SSB Subcarrier Offset";
         }
         container pdcch-cfg-sib1 {
             leaf coreset-zero {
-                type cgcts:coreset-zero-t;
+                type cgdcts:coreset-zero-t;
                 description "Control Resource Set With ID #0";
             }
             leaf ss-zero {
-                type cgcts:ss-zero-t;
+                type cgdcts:ss-zero-t;
                 description "Search Space With ID #0";
             }
         }

@@ -3,9 +3,8 @@ submodule certus-5gnr-du-cell-base {
         prefix cgdcs;
     }
     
-    import tailf-common { prefix tailf; }
-    import certus-5gnr-cell-types {
-        prefix cgcts;
+    import certus-5gnr-du-cell-types {
+        prefix cgdcts;
         revision-date 2019-06-20;
     }
     
@@ -18,16 +17,16 @@ submodule certus-5gnr-du-cell-base {
 
     grouping s-nssai {
         leaf sst {
-            type cgcts:sst-t;
+            type cgdcts:sst-t;
             description 'Slice/Service Type';
         }
         leaf sd {
-            type cgcts:sd-t;
+            type cgdcts:sd-t;
             description "Slice Differentiator";
         }
     }
     grouping served-plmn {
-        uses cgcts:plmn-id;
+        uses cgdcts:plmn-id;
         list s-nssais {
             key sst;
             uses s-nssai;
@@ -38,27 +37,25 @@ submodule certus-5gnr-du-cell-base {
     
 
     grouping cell-base {
-        leaf nr-mode-type { type cgcts:nr-mode-type-e; }
+        leaf nr-mode-type { type cgdcts:nr-mode-type-e; }
         container nr-cgi {
-            uses cgcts:plmn-id;
+            uses cgdcts:plmn-id;
             leaf nr-cell-id {
-                type cgcts:nr-cell-id-t;
-                tailf:validate "nr-cell-id-check" {
-                    tailf:dependency ".";
-                }
+                type cgdcts:nr-cell-id-t;
+                must "band(., 15) = 0";
             }
             description "NR Cell Global Identifier";
         }
         leaf nr-pci {
-            type cgcts:nr-pci-t;
+            type cgdcts:nr-pci-t;
             description "NR Physical Cell ID (0..1007)";
         }
         leaf tac-5gs {
-            type cgcts:tac-5gs-t;
+            type cgdcts:tac-5gs-t;
             description "5GS Tracking Area Code";
         }
         leaf cfgrd-eps-tac {
-            type cgcts:cfgrd-eps-tac-t;
+            type cgdcts:cfgrd-eps-tac-t;
             description "Configured EPS TAC";
         }
         list served-plmns {
@@ -70,11 +67,11 @@ submodule certus-5gnr-du-cell-base {
         container si-perd {
             leaf sib2-perd {
                 if-feature optional;
-                type cgcts:si-perd-e;
+                type cgdcts:si-perd-e;
             }
             leaf sib3-perd {
                 if-feature optional;
-                type cgcts:si-perd-e;
+                type cgdcts:si-perd-e;
             }
             description "SI Periodicity";
         }

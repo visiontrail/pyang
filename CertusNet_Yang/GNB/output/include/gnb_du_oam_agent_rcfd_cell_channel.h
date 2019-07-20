@@ -1,7 +1,8 @@
-/*
+/*********************************************************************************
  * filename: gnb_du_oam_agent_cell_channel.h 
- * This header file contains implementation of OAM Agent RConfD Generate by Tools 
-*/ 
+ * Description: This header file contains implementation of OAM Agent RConfD.
+ * Generation time: 2019-07-20 14:39:34
+*********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_CELL_CHANNEL__
 #define __GNB_DU_OAM_AGENT_CELL_CHANNEL__

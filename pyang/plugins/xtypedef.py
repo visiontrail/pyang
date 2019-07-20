@@ -11,6 +11,7 @@ Idea copied from libsmi.
 import optparse
 import re
 import sys
+import datetime
 
 from pyang import plugin
 from pyang import statements
@@ -147,7 +148,6 @@ def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
                 (child.arg)), refine_type_name_cpp(child.arg.replace('-', '_')))
             print("[Warning]!!!!! The node " + child.arg + " 's type is not supported!")
         fdtd.write(line + "\n")
-
     fdtd.write("} " + get_struct_name(group.arg) + ";\n")
 
     line = "void read_grp_" + group.arg.replace('-', '_') + "(XCONFD_YANGTREE_T* yt, " + get_struct_name(
@@ -173,6 +173,8 @@ def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
         
 all_typedef = {}  # 所有在typedef文件中的typedef
 all_grouping = {} # 所有在typedef文件中的grouping
+nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+firstline = "********************************************************************************"
 
 # modules: the yang module
 # fd: 输出文件句柄
@@ -186,9 +188,10 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
         md = ctx.modules[typedefmd]
         if md.arg == "certus-5gnr-du-cell-types":
             fdtd = open((get_output_filepath_inc(fd) + "/gnb_du_oam_agent_rcfd_cell_types.h" ), "w")
-            fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_cell_types.h \n"
-            fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
-            fdline += "*/ \n\n"
+            fdline = "/*" + firstline + " \n" + " * Filename: gnb_du_oam_agent_rcfd_cell_types.h \n"
+            fdline += " * Description: This header file contains implementation of OAM Agent RConfD.\n"
+            fdline += " * Generation time: " + nowTime + "\n"
+            fdline += "*" + firstline +"/ \n\n"
             fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n"
             fdline += "#define __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n\n"
 
@@ -225,9 +228,10 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
 
         elif md.arg == "certus-5gnr-du-du-types":
             fdtd = open((get_output_filepath_inc(fd) + "/gnb_du_oam_agent_rcfd_du_types.h" ), "w")
-            fdline = "/*\n" + " * filename: gnb_du_oam_agent_rcfd_du_types.h \n"
-            fdline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
-            fdline += "*/ \n\n"
+            fdline = "/*" + firstline + " \n" + " * Filename: gnb_du_oam_agent_rcfd_du_types.h \n"
+            fdline += " * Description: This header file contains implementation of OAM Agent RConfD.\n"
+            fdline += " * Generation time: " + nowTime + "\n"
+            fdline += "*" + firstline +"/ \n\n"
             fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n"
             fdline += "#define __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n\n"
 
@@ -266,9 +270,10 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
     for module in modules:
         mod_name = module.arg.replace(
             'certus-5gnr-du-', 'gnb_du_oam_agent_').replace('-', '_')
-        headerline = "/*\n" + " * filename: " + mod_name + ".h \n"
-        headerline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
-        headerline += "*/ \n\n"
+        headerline = "/*" + firstline + "\n" + " * filename: " + mod_name + ".h \n"
+        headerline += " * Description: This header file contains implementation of OAM Agent RConfD.\n"
+        headerline += " * Generation time: " + nowTime + "\n"
+        headerline += "*" + firstline + "/ \n\n"
         headerline += "#ifndef " + "__" + mod_name.upper() + "__\n"
         headerline += "#define " + "__" + mod_name.upper() + "__\n\n"
         judgetemp = module.arg.replace('certus-5gnr-du-', '')
@@ -369,9 +374,10 @@ def print_cppfile_header(modules, fdcpp):
     for module in modules:
         mod_name = module.arg.replace(
             'certus-5gnr-du-', 'gnb_du_oam_agent_rcfd_').replace('-', '_')
-        headerline = "/*\n" + " * filename: " + mod_name + ".cpp \n"
-        headerline += " * This header file contains implementation of OAM Agent RConfD Generate by Tools \n"
-        headerline += "*/ \n\n"
+        headerline = "/*" + firstline + "\n" + " * Filename: " + mod_name + ".cpp \n"
+        headerline += " * Description: This file implementation of OAM Agent RConfD.\n"
+        headerline += " * Generation time: " + nowTime + "\n"
+        headerline += "*" + firstline + "/ \n\n"
 
         headerline += "#include \"" + mod_name + ".h\" \n\n"
 
@@ -719,7 +725,7 @@ def print_structure_func_realize(fdcpp, s, module, line, level):
         if s.keyword == "container":
             if judge_if_optional_state(s) == 1:
                 cppline = "    if (!yt) return;\n"
-                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(s.arg) + ">();\n"
+                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(judge_if_uses(s)) + ">();\n"
                 fdcpp.write(cppline + "\n")
             if level == 0:
                 cppline = "    read_grp_" + judge_if_uses(s).replace('-','_') + "(yt, *" + s.arg.replace('-','_') + "_);\n"
@@ -772,8 +778,12 @@ def print_get_leaf_realize(prtch, mem):
             refine_type_name(get_typename(prtch)) + ", " + \
             refine_type_name_cpp(get_typename(prtch)) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
     else:
-        cppline = "    xconfd_get(" + mem + \
-            ", " + refine_type_name_cpp(get_typename(prtch)) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
+        if refine_type_name_cpp(get_typename(prtch)) in all_typedef.keys():
+            cppline = "    xconfd_get(" + mem + \
+                ", " + refine_type_name_cpp(all_typedef[get_typename(prtch)]) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
+        else:
+            cppline = "    xconfd_get(" + mem + \
+                ", " + refine_type_name_cpp(get_typename(prtch)) + ", " + "\"" + prtch.arg + "\"" + ", yt);\n"
     
     return cppline
     #fdcpp.write(cppline)
@@ -791,7 +801,7 @@ def print_read_func_realize(fdcpp, s, module, line, level):
         if s.keyword == "container":
             if judge_if_optional_state(s) == 1:
                 cppline = "    if (!yt) return;\n"
-                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(s.arg) + ">();\n"
+                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(judge_if_uses(s)) + ">();\n"
                 fdcpp.write(cppline + "\n")
             if level == 0:
                 if judge_if_optional_state(s) == 1:
@@ -822,7 +832,7 @@ def print_read_func_realize(fdcpp, s, module, line, level):
         if s.keyword == "container":
             if judge_if_optional_state(s) == 1:
                 cppline = "    if (!yt) return;\n"
-                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(s.arg) + ">();\n"
+                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(judge_if_uses(s)) + ">();\n"
                 fdcpp.write(cppline + "\n")
             if level == 0:
                 if judge_if_optional_state(s) == 1:
@@ -910,9 +920,9 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
         if judge_if_optional_state(s) == 1:
             cppline = "    if (!yt) return;\n"
             if level == 0:
-                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(s.arg) + ">();\n"
+                cppline += "    " + s.arg.replace('-','_') + "_ = std::make_shared<" + get_struct_name(judge_if_uses(s)) + ">();\n"
             elif level == 1:
-                cppline += "    " + s.arg.replace('-','_') + " = std::make_shared<" + get_struct_name(s.arg) + ">();\n"
+                cppline += "    " + s.arg.replace('-','_') + " = std::make_shared<" + get_struct_name(judge_if_uses(s)) + ">();\n"
             fdcpp.write(cppline + "\n")
         if s.keyword == "container":
             if isshareprt == True:

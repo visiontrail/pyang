@@ -1,7 +1,8 @@
-/*
+/*********************************************************************************
  * filename: gnb_du_oam_agent_du_base.h 
- * This header file contains implementation of OAM Agent RConfD Generate by Tools 
-*/ 
+ * Description: This header file contains implementation of OAM Agent RConfD.
+ * Generation time: 2019-07-20 14:39:40
+*********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_DU_BASE__
 #define __GNB_DU_OAM_AGENT_DU_BASE__
