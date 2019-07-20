@@ -1,7 +1,7 @@
 /********************************************************************************* 
  * Filename: gnb_du_oam_agent_rcfd_cell_types.h 
  * Description: This header file contains implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 14:39:37
+ * Generation time: 2019-07-20 16:31:02
 *********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__
@@ -590,11 +590,7 @@ typedef struct structPlmnId
     std::string mcc; 
     std::string mnc; 
 } PlmnId;
-void read_grp_plmn_id(XCONFD_YANGTREE_T* yt, PlmnId& plmn_id)
-{
-    xconfd_get(plmn_id.mcc, string, "mcc", yt);
-    xconfd_get(plmn_id.mnc, string, "mnc", yt);
-}
+void read_grp_plmn_id(XCONFD_YANGTREE_T* yt, PlmnId& plmn_id);
 } //end of namespace rcfd
 } //end of namespace gnb_du
 #endif

@@ -12,6 +12,7 @@ import optparse
 import re
 import sys
 import datetime
+import difflib
 
 from pyang import plugin
 from pyang import statements
@@ -95,11 +96,13 @@ def print_typedef_header(fdtd, typedef):
             elif ch.arg not in ['int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64'] and \
                  ch.keyword not in ['description']:
                  print("[Warning]!!!!! type file include unsupported type : node : " + ch.arg + ",please check it !!!!!!")
-            
-def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
+
+
+def print_typedef_header_grouping(fdtd, fd, group, prefix_with_modname):
+    fdtdcpp = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_common_ref.txt" ), "a+")
     line = "typedef struct struct" + get_struct_name(group.arg) + "\n{\n"
     fdtd.write(line)
-    for child in group.i_children:
+    for child in group.substmts:
         if ((child.keyword == "container")):
             if judge_if_optional_state(child) == 1:
                 if judge_if_uses_state(child) <= 2:
@@ -149,27 +152,34 @@ def print_typedef_header_grouping(fdtd, group, prefix_with_modname):
             print("[Warning]!!!!! The node " + child.arg + " 's type is not supported!")
         fdtd.write(line + "\n")
     fdtd.write("} " + get_struct_name(group.arg) + ";\n")
-
-    line = "void read_grp_" + group.arg.replace('-', '_') + "(XCONFD_YANGTREE_T* yt, " + get_struct_name(
-               group.arg) + "& " + group.arg.replace('-', '_') + ")\n{"
-    fdtd.write(line + '\n')
-    for cppch in group.i_children:
-        if cppch.keyword == "leaf":
-            if get_typename(cppch) == "empty":
-                line = "    xconfd_get_empty_value(" + group.arg.replace('-','_') + "->" + cppch.arg.replace('-','_') + \
-                    ", " + "\"" + cppch.arg + "\"" + ", yt);\n"
-            else:
-                line = print_get_leaf_realize(cppch, group.arg.replace('-','_') + "." + cppch.arg.replace('-','_'))
-            fdtd.write(line)
-        elif cppch.keyword == "leaf-list":
-            line = "    xconfd_yang_tree_get_leaf_list(" + group.arg.replace('-','_') + "->" + cppch.arg.replace('-','_') + \
-                    ", " + refine_type_name_cpp(get_typename(cppch)) + ", " + "\"" + cppch.arg + "\"" + ", yt);\n"
-            fdtd.write(line)
-
-        else:
-            print("err_ptr_groupfunc:" + str(cppch))
     
-    fdtd.write("}\n")
+    line = "void read_grp_" + group.arg.replace('-', '_') + "(XCONFD_YANGTREE_T* yt, " + get_struct_name(
+               group.arg) + "& " + group.arg.replace('-', '_') + ")"
+    fdtd.write(line + ';\n')
+    
+    # already_write = []
+    # for cppline in fdtdcpp.readlines():
+    #     if cppline.find('void') >= 0:
+    #         already_write.append(cppline)
+
+    # if line + '\n' not in already_write:
+    #     fdtdcpp.write(line + '\n{\n')
+        # if cppch.keyword == "leaf":
+        #     if get_typename(cppch) == "empty":
+        #         line = "    xconfd_get_empty_value(" + group.arg.replace('-','_') + "->" + cppch.arg.replace('-','_') + \
+        #             ", " + "\"" + cppch.arg + "\"" + ", yt);\n"
+        #     else:
+        #         line = print_get_leaf_realize(cppch, group.arg.replace('-','_') + "." + cppch.arg.replace('-','_'))
+        #     fdtd.write(line)
+        # elif cppch.keyword == "leaf-list":
+        #     line = "    xconfd_yang_tree_get_leaf_list(" + group.arg.replace('-','_') + "->" + cppch.arg.replace('-','_') + \
+        #             ", " + refine_type_name_cpp(get_typename(cppch)) + ", " + "\"" + cppch.arg + "\"" + ", yt);\n"
+        #     fdtd.write(line)
+
+        # else:
+        #     print("err_ptr_groupfunc:" + str(cppch))
+        
+        # fdtdcpp.write("}\n")
         
 all_typedef = {}  # 所有在typedef文件中的typedef
 all_grouping = {} # 所有在typedef文件中的grouping
@@ -195,8 +205,8 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
             fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n"
             fdline += "#define __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n\n"
 
-            fdline += "#include <string>\n#include <vector>\n#include <map>\n#include <memory>\n"
-            fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n#include \"gnb_du_oam_comm.h\"\n\n"
+            fdline += "#include <string>\n#include <vector>\n#include <memory>\n"
+            fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n\n"
 
             fdline += "namespace gnb_du \n"
             fdline += "{\n"
@@ -216,7 +226,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
             for tdname in md.i_groupings:
                 grouping = md.i_groupings[tdname]
                 if grouping.keyword == "grouping":
-                    print_typedef_header_grouping(fdtd, grouping, ctx.opts.modname_prefix)
+                    print_typedef_header_grouping(fdtd, fd, grouping, ctx.opts.modname_prefix)
                     all_grouping[grouping.arg] = "read_grp_" + grouping.arg.replace('-','_') + "(XCONFD_YANGTREE_T* yt, " \
                         + get_struct_name(grouping.arg) + "& "  + grouping.arg.replace('-','_') + ");\n"
             
@@ -235,8 +245,8 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
             fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n"
             fdline += "#define __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n\n"
 
-            fdline += "#include <string>\n#include <vector>\n#include <map>\n#include <memory>\n"
-            fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n#include \"gnb_du_oam_comm.h\"\n\n"
+            fdline += "#include <string>\n#include <vector>\n#include <memory>\n"
+            fdline += "#include \"xconfd_api.h\"\n#include \"gnb_du_common.h\"\n\n"
 
             fdline += "namespace gnb_du \n"
             fdline += "{\n"
@@ -256,7 +266,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
             for tdname in md.i_groupings:
                 grouping = md.i_groupings[tdname]
                 if grouping.keyword == "grouping":
-                    print_typedef_header_grouping(fdtd, grouping, ctx.opts.modname_prefix)
+                    print_typedef_header_grouping(fdtd, fd, grouping, ctx.opts.modname_prefix)
                     all_grouping[grouping.arg] = "read_grp_" + grouping.arg.replace('-','_') + "(XCONFD_YANGTREE_T* yt, " \
                         + get_struct_name(grouping.arg) + "& "  + grouping.arg.replace('-','_') + ");\n"
             
@@ -608,10 +618,15 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
         if ((child.keyword == "container")):
             opt = [temp for temp in child.substmts if temp.arg == "optional"]
             if (len(opt) > 0):
-                line = "    std::shared_ptr<" + get_struct_name(child.arg) + "> " + \
+                line = "    std::shared_ptr<" + get_struct_name(judge_if_uses(child)) + "> " + \
                     child.arg.replace('-', '_') + "_;"
             else:
-                line = "    %s %s_; " % (get_struct_name(child.arg), child.arg.replace('-', '_'))
+                if judge_if_uses_state(child) == 1:
+                    line = "    %s %s_; " % (get_struct_name(judge_if_uses(child)), child.arg.replace('-', '_'))
+                elif judge_if_uses_state(child) >= 2:
+                    line = "    %s %s_; " % (get_struct_name(child.arg), child.arg.replace('-', '_'))
+                else:
+                    line = "    %s %s_; " % (get_struct_name(child.arg), child.arg.replace('-', '_'))
             
             ytname = child.arg.replace('-','_') + "_yt"
             cppline = "    auto " + ytname + " = " + "xconfd_yang_tree_get_node" + "(yt, \"" + \
@@ -632,7 +647,11 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
                     child, prefix_with_modname))[0:-1] + "> " + child.arg.replace('-', '_') + "_;"
 
         elif child.keyword == "leaf":
-            line = "    %s %s_; " % (refine_type_name((get_typename(child, prefix_with_modname))), child.arg.replace('-', '_'))
+            opt = [temp for temp in child.substmts if temp.arg == "optional"]
+            if (len(opt) > 0):
+                line = "    std::shared_ptr<%s> %s_; " % (refine_type_name((get_typename(child, prefix_with_modname))), child.arg.replace('-', '_'))
+            else:
+                line = "    %s %s_; " % (refine_type_name((get_typename(child, prefix_with_modname))), child.arg.replace('-', '_'))
             if get_typename(child, prefix_with_modname) == "empty":
                 cppline = "    xconfd_get_empty_value(" + child.arg.replace('-', '_') + "_ " + ", \"" + child.arg + "\", yt);\n"
             else:
@@ -1190,10 +1209,11 @@ def judge_if_uses(child_node):
     child_len = [ch for ch in child_node.substmts
                  if ch.keyword == "uses"]
 
+
     if(len(child_len) > 1):
         print("[Warning]!!! container or list " + child_node.arg + " can not contain more than one uses, please check !!!")
 
-    if(len(child_len) == 1):
+    if judge_if_uses_state(child_node) == 2 or judge_if_uses_state(child_node) == 1:
         if str(child_len[0].arg).find(":") > 0:
             return str(child_len[0].arg)[str(child_len[0].arg).find(":") + 1 :]
         else:
