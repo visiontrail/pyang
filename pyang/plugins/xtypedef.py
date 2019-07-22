@@ -350,6 +350,7 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
 
         alreadyGen = []
         # 第四次遍历 输出所有主grouping首级container和list的read_function
+        fd.write("private:\n")
         for groupname in module.i_groupings:
             if groupname != module.arg.replace('certus-5gnr-du-', ''):
                 continue
