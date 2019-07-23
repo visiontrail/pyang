@@ -99,7 +99,7 @@ def print_typedef_header(fdtd, typedef):
 
 
 def print_typedef_header_grouping(fdtd, fd, group, prefix_with_modname):
-    fdtdcpp = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_common_ref.txt" ), "a+")
+    # fdtdcpp = open((get_output_filepath(fd) + "/gnb_du_oam_agent_rcfd_common_ref.txt" ), "a+")
     line = "typedef struct struct" + get_struct_name(group.arg) + "\n{\n"
     fdtd.write(line)
     for child in group.substmts:
@@ -199,8 +199,12 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
         if md.arg == "certus-5gnr-du-cell-types":
             fdtd = open((get_output_filepath_inc(fd) + "/gnb_du_oam_agent_rcfd_cell_types.h" ), "w")
             fdline = "/*" + firstline + " \n" + " * Filename: gnb_du_oam_agent_rcfd_cell_types.h \n"
+            fdline += " *\n"
             fdline += " * Description: This header file contains implementation of OAM Agent RConfD.\n"
+            fdline += " *\n"
             fdline += " * Generation time: " + nowTime + "\n"
+            fdline += " *\n"
+            fdline += " * YANG file latest revision: " + md.i_latest_revision + "\n"
             fdline += "*" + firstline +"/ \n\n"
             fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n"
             fdline += "#define __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__\n\n"
@@ -239,8 +243,12 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
         elif md.arg == "certus-5gnr-du-du-types":
             fdtd = open((get_output_filepath_inc(fd) + "/gnb_du_oam_agent_rcfd_du_types.h" ), "w")
             fdline = "/*" + firstline + " \n" + " * Filename: gnb_du_oam_agent_rcfd_du_types.h \n"
+            fdline += " *\n"
             fdline += " * Description: This header file contains implementation of OAM Agent RConfD.\n"
+            fdline += " *\n"
             fdline += " * Generation time: " + nowTime + "\n"
+            fdline += " *\n"
+            fdline += " * YANG file latest revision: " + md.i_latest_revision + "\n"
             fdline += "*" + firstline +"/ \n\n"
             fdline += "#ifndef __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n"
             fdline += "#define __GNB_DU_OAM_AGENT_RCFD_DU_TYPES_H__\n\n"
@@ -280,9 +288,13 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
     for module in modules:
         mod_name = module.arg.replace(
             'certus-5gnr-du-', 'gnb_du_oam_agent_').replace('-', '_')
-        headerline = "/*" + firstline + "\n" + " * filename: " + mod_name + ".h \n"
+        headerline = "/*" + firstline + "\n" + " * Filename: " + mod_name + ".h \n"
+        headerline += " *\n"
         headerline += " * Description: This header file contains implementation of OAM Agent RConfD.\n"
+        headerline += " *\n"
         headerline += " * Generation time: " + nowTime + "\n"
+        headerline += " *\n"
+        headerline += " * YANG file latest revision: " + module.i_latest_revision + "\n"
         headerline += "*" + firstline + "/ \n\n"
         headerline += "#ifndef " + "__" + mod_name.upper() + "__\n"
         headerline += "#define " + "__" + mod_name.upper() + "__\n\n"
@@ -386,8 +398,12 @@ def print_cppfile_header(modules, fdcpp):
         mod_name = module.arg.replace(
             'certus-5gnr-du-', 'gnb_du_oam_agent_rcfd_').replace('-', '_')
         headerline = "/*" + firstline + "\n" + " * Filename: " + mod_name + ".cpp \n"
+        headerline += " *\n"
         headerline += " * Description: This file implementation of OAM Agent RConfD.\n"
+        headerline += " *\n"
         headerline += " * Generation time: " + nowTime + "\n"
+        headerline += " *\n"
+        headerline += " * YANG file latest revision: " + module.i_latest_revision + "\n"
         headerline += "*" + firstline + "/ \n\n"
 
         headerline += "#include \"" + mod_name + ".h\" \n\n"
