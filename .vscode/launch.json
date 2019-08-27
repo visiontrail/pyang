@@ -8,7 +8,7 @@
             "name": "xtype debug schd",
             "type": "python",
             "request": "launch",
-            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/Tools/pyang/pyang.py",
+            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_tools/pyang/pyang.py",
             "console": "integratedTerminal",
             "args": [
                 "-f",
@@ -26,7 +26,7 @@
             "name": "xtype debug l1",
             "type": "python",
             "request": "launch",
-            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/Tools/pyang/pyang.py",
+            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_tools/pyang/pyang.py",
             "console": "integratedTerminal",
             "args": [
                 "-f",
@@ -42,7 +42,7 @@
             "name": "xtype du base",
             "type": "python",
             "request": "launch",
-            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/Tools/pyang/pyang.py",
+            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_tools/pyang/pyang.py",
             "console": "integratedTerminal",
             "args": [
                 "-f",
@@ -58,7 +58,7 @@
             "name": "xtype debug",
             "type": "python",
             "request": "launch",
-            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/Tools/pyang/pyang.py",
+            "program": "/home/guoliang/Desktop/WorkSpace/CertusNet/oam_tools/pyang/pyang.py",
             "console": "integratedTerminal",
             "args": [
                 "-f",

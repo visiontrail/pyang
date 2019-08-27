@@ -1,7 +1,11 @@
 /*********************************************************************************
  * Filename: gnb_du_oam_agent_rcfd_cell_schd.cpp 
+ *
  * Description: This file implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 16:31:02
+ *
+ * Generation time: 2019-08-24 15:09:53
+ *
+ * YANG file latest revision: 2019-06-20
 *********************************************************************************/ 
 
 #include "gnb_du_oam_agent_rcfd_cell_schd.h" 
@@ -567,41 +571,4 @@ void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn(XCONFD_YANGTREE_T* yt, UlCfgC
     read_grp_ul_cfg_cmn__ue_harq_info(ue_harq_info_yt, ul_cfg_cmn.ue_harq_info);
 }
 
-void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn__freq_info(XCONFD_YANGTREE_T* yt, std::shared_ptr<UlFreqInfo>& freq_info)
-{
-    if (!yt) return;
-    freq_info = std::make_shared<UlFreqInfo>();
-
-    read_grp_ul_freq_info(yt, *freq_info);
-}
-
-void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn__initial_bwp(XCONFD_YANGTREE_T* yt, UlBwpCmn& initial_bwp)
-{
-    read_grp_ul_bwp_cmn(yt, initial_bwp);
-}
-
-void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn__ue_harq_info(XCONFD_YANGTREE_T* yt, UeHarqInfo& ue_harq_info)
-{
-    xconfd_get(ue_harq_info.max_harq, uint8, "max-harq", yt);
-    xconfd_get(ue_harq_info.delta_harq_offset, uint8, "delta-harq-offset", yt);
-}
-
-void oam_agent_rcfd_cell_schd::read_grp_pusch_cfg_cmn(XCONFD_YANGTREE_T* yt, PuschCfgCmn& pusch_cfg_cmn)
-{
-    xconfd_get_empty_value(pusch_cfg_cmn.grp_hopping_trans_precoding, "grp-hopping-trans-precoding", yt);
-    xconfd_get_optional(pusch_cfg_cmn.msg3_delta_preamble, int8_t, int8, "msg3-delta-preamble", yt);
-    xconfd_get_optional(pusch_cfg_cmn.p0_nominal_with_grant, int16_t, int16, "p0-nominal-with-grant", yt);
-}
-
-void oam_agent_rcfd_cell_schd::read_grp_ss_pbch(XCONFD_YANGTREE_T* yt, SsPbch& ss_pbch)
-{
-    xconfd_get(ss_pbch.scs_cmn, enum, "scs-cmn", yt);
-    xconfd_get(ss_pbch.ssb_sc_offset, uint8, "ssb-sc-offset", yt);
-    xconfd_get(ss_pbch.burst_set_size, uint8, "burst-set-size", yt);
-    xconfd_get(ss_pbch.ssb_scell_perd, enum, "ssb-scell-perd", yt);
-    xconfd_get(ss_pbch.ssb_power, int8, "ssb-power", yt);
-}
-
-
-} // namespace rcfd 
-} // namespace gnb_du
+void oam_agent_rcfd_cell_schd::read_grp_ul_cfg_cmn__freq_info(XCON

@@ -1,7 +1,11 @@
 /********************************************************************************* 
  * Filename: gnb_du_oam_agent_rcfd_cell_types.h 
+ *
  * Description: This header file contains implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 16:31:02
+ *
+ * Generation time: 2019-08-24 15:09:53
+ *
+ * YANG file latest revision: 2019-06-20
 *********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_RCFD_CELL_TYPES_H__
@@ -9,11 +13,9 @@
 
 #include <string>
 #include <vector>
-#include <map>
 #include <memory>
 #include "xconfd_api.h"
 #include "gnb_du_common.h"
-#include "gnb_du_oam_comm.h"
 
 namespace gnb_du 
 {
@@ -549,48 +551,4 @@ typedef uint8_t TciStateIdT;
 
 typedef uint8_t CoresetZeroT;
 
-typedef enum enumMaxCbgsPerTbE
-{
-    CBGS_N2,
-    CBGS_N4,
-    CBGS_N6,
-    CBGS_N8
-} MaxCbgsPerTbE;
-
-typedef enum enumRaMsg3SizeGrpAE
-{
-    RA_B56,
-    RA_B144,
-    RA_B208,
-    RA_B256,
-    RA_B282,
-    RA_B480,
-    RA_B640,
-    RA_B800,
-    RA_B1000,
-    RA_B72,
-    RA_SPARE6,
-    RA_SPARE5,
-    RA_SPARE4,
-    RA_SPARE3,
-    RA_SPARE2,
-    RA_SPARE1
-} RaMsg3SizeGrpAE;
-
-typedef uint32_t SdT;
-
-typedef enum enumTransPerdV1530E
-{
-    TRANS_MS3_V1530,
-    TRANS_MS4_V1530
-} TransPerdV1530E;
-
-typedef struct structPlmnId
-{
-    std::string mcc; 
-    std::string mnc; 
-} PlmnId;
-void read_grp_plmn_id(XCONFD_YANGTREE_T* yt, PlmnId& plmn_id);
-} //end of namespace rcfd
-} //end of namespace gnb_du
-#endif
+typedef enum enumMax

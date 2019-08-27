@@ -386,6 +386,11 @@ def emit_tree(ctx, modules, fd, depth, llen, path):
         classline = "\npublic:\n"
         classline += "    " + classname + "(XCONFD_YANGTREE_T* yt);\n"
         classline += "    virtual ~" + classname + "() {}\n};\n\n"
+
+        # 加入typedef
+        classline += "typedef std::shared_ptr<oam_agent_rcfd_" + mod_name.replace('gnb_du_oam_agent_', '') + \
+                     "> rcfd_" + mod_name.replace('gnb_du_oam_agent_', '') + "_ptr;\n\n"
+
         classline += "} //" + "end of namespace rcfd\n"
         classline += "} //" + "end of namespace gnb_du\n"
         classline += "#endif /* __" + mod_name.upper() + "__ */"
@@ -652,7 +657,7 @@ def print_mem(i_children, module, fd, fdcpp, prefix, path, mode, depth,
             fdcpp.write(cppline)
 
         elif ((child.keyword == "list")):
-            line = "    std::vector<std::shared_ptr<" + get_struct_name(child.arg)[0:-1] + ">> " + \
+            line = "    std::vector<std::shared_ptr<" + get_struct_name(judge_if_uses(child)) + ">> " + \
                 child.arg.replace('-', '_') + "_;"
             cppline = "    auto " + child.arg.replace('-', '_') + "_yt = xconfd_yang_tree_get_node(yt, \"" + child.arg + "\");\n"
             cppline += "    read_" + child.arg.replace('-', '_') + "(" + child.arg.replace('-', '_') + "_yt);\n"
@@ -997,7 +1002,7 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
                 cppline = "    xconfd_yang_tree_get_leaf_list(" + s.arg.replace('-','_') + "->" + cppch.arg.replace('-','_') + \
                         ", " + refine_type_name_cpp(get_typename(cppch)) + ", " + "\"" + cppch.arg + "\"" + ", yt);\n"
                 fdcpp.write(cppline)
-            elif cppch.keyword == "container" and judge_if_uses_state(s) == 4:
+            elif cppch.keyword == "container" and (judge_if_uses_state(cppch) == 4 or judge_if_uses_state(cppch) == 1 ):
                 ytname = cppch.arg.replace('-','_') + "_yt"
                 cppline = "    auto " + ytname + " = " + "xconfd_yang_tree_get_node" + "(yt, \"" + \
                     cppch.arg + "\");\n"
@@ -1005,11 +1010,12 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
                     ytname + ", " + (s.arg.replace('-', '_')) + "." + cppch.arg.replace('-','_') + ");\n"
                 fdcpp.write(cppline)
             elif cppch.keyword == "list" and judge_if_uses_state(cppch) == 1:
-                cppline = "    read_grp_" + s.arg.replace('-','_') + "__" + cppch.arg.replace('-','_') + \
-                    "(yt, " + s.arg.replace('-','_') + "." + cppch.arg.replace('-','_') + ");\n"
+                cppline = "    auto " + cppch.arg.replace('-', '_') + "_yt" + "= xconfd_yang_tree_get_node(yt, \"" + cppch.arg + "\");\n"
+                cppline += "    read_grp_" + s.arg.replace('-','_') + "__" + cppch.arg.replace('-','_') + \
+                    "(" + cppch.arg.replace('-', '_') + "_yt" + ", " + s.arg.replace('-','_') + "." + cppch.arg.replace('-','_') + ");\n"
                 fdcpp.write(cppline)
             else:
-                print("err_ptr_groupfunc:" + str(cppch))
+                print("err_ptr_groupfunc1:" + str(cppch) + " and father name is " + s.arg)
         
         # 提取这个grouping下所有使用的uses节点
         child_uses = [ch for ch in s.substmts if ch.keyword == "uses"]
@@ -1053,7 +1059,7 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
                     fdcpp.write(cppline)
 
                 else:
-                    print("err_ptr_groupfunc:" + str(cppch))
+                    print("err_ptr_groupfunc2:" + str(cppch))
             
             cppline =  "        " + func_parameter + ".push_back(" + judge_if_uses(s).replace('-','_')[0:-1] + ");\n"
             cppline += "    }\n"
@@ -1096,7 +1102,7 @@ def print_read_grp_func_realize(fdcpp, s, module, line, level, isshareprt, func_
                         ytname + ", " + (s.arg.replace('-', '_')) + "." + cppch.arg.replace('-','_') + ");\n"
                     fdcpp.write(cppline)
                 else:
-                    print("err_ptr_groupfunc:" + str(cppch))
+                    print("err_ptr_groupfunc3:" + str(cppch))
 
     
     fdcpp.write("}\n\n")
