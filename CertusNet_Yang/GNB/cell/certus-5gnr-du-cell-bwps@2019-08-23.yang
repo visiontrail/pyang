@@ -1,0 +1,180 @@
+submodule certus-5gnr-du-cell-bwps {
+    belongs-to certus-5gnr-du-cells {
+        prefix cgdcs;
+    }
+    
+    import certus-5gnr-du-cell-types {
+        prefix cgdcts;
+        revision-date 2019-06-20;
+    }
+
+    organization "CertusNet";
+    description "This module defines du cell bwps configuration.";
+    
+    revision 2019-08-23 {
+        description  "Initial revision.";
+    }
+    
+    
+    grouping rach-gen {
+        leaf prach-cfg-idx {
+            type uint8 { range "0..255"; }
+            description "PRACH Configuration Index";
+        }
+        leaf msg1-fdm {
+            type cgdcts:msg1-fdm-e;
+            description "Transmission Occasion Number FDMed Per Time Instance";
+        }
+        leaf msg1-freq-start {
+            type uint16 { range "0..274"; }
+            description "Offset Of Lowest PRACH Transmission Occasion";
+        }
+        leaf zero-corre-zone {
+            type uint8 { range "0..15"; }
+            description "Zero Correlation Zone Configuration";
+        }
+        leaf preamble-rx-tpower {
+            type int16 { range "-202..-60"; }
+            description "Preamble Received Target Power";
+        }
+        leaf preamble-trans-max {
+            type cgdcts:preamble-trans-max-e;
+            description "Max Preamble Transmission";
+        }
+        leaf power-ramp-step {
+            type cgdcts:power-ramp-step-e;
+            description "Power Ramping Steps";
+        }
+        leaf ra-rsp-win {
+            type cgdcts:ra-rsp-win-e;
+            description "RAR Window Length";
+        }
+        description "RACH Generic Configuration";
+    }
+    grouping rach-grpb {
+        leaf ra-msg3-size-grp-a {
+            type cgdcts:ra-msg3-size-grp-a-e;
+            description "Msg3 Size With GroupA Preamble";
+        }
+        leaf num-ra-preamble-grp-a {
+            type uint8 { range "1..64"; }
+            description "Number Of CB Preambles Per SSB In Group A";
+        }
+    }
+
+
+    grouping bwp-gen {
+        leaf bwp-id {
+            type cgdcts:bwp-id-t;
+            description "Bandwidth Part ID";
+        }
+        leaf scs { type cgdcts:scs-e; }
+        leaf cp-extended {
+            type empty;
+            description "Cyclic Prefix Extended";
+        }
+        leaf start-rb { type uint16; }
+        leaf rb-num { type uint16; }
+        description "Generic BWP";
+    }
+    grouping rach-cfg {
+        container rach-gen {
+            uses rach-gen;
+        }
+        leaf preamble-format { type cgdcts:rach-preamble-format-e; }
+        leaf total-num-ra-preamble {
+            type uint8 { range "1..63"; }
+            description "Total Number Of Preambles For RA";
+        }
+        leaf ssb-per-rach-occ {
+            type cgdcts:ssb-per-rach-occ-e;
+            description "SSBs Number Per RACH Occasion";
+        }
+        leaf cb-preamble-per-ssb {
+            type uint8 { range "0..16"; }
+            description "Contention Based Preambles Number Per SSB";
+        }
+        container rach-grpb {
+            if-feature optional;
+            uses rach-grpb;
+        }
+        leaf ra-cont-res-tmr {
+            type cgdcts:ra-cont-res-tmr-e;
+            description "RA Contention Resolution Timer";
+        }
+        leaf prach-root-seq-idx-type {
+            type cgdcts:prach-root-seq-idx-type-e;
+            description "PRACH Root Sequence Index Type L839/L139";
+        }
+        leaf prach-root-seq-idx {
+            type uint16 { range "0..837"; }
+            description "PRACH Root Sequence Index";
+        }
+        leaf msg1-scs {
+            type cgdcts:scs-e;
+            description "Msg1 Subcarrier Spacing";
+        }
+        leaf restr-set {
+            type cgdcts:restr-set-e;
+            description "Restricted Set Configuration";
+        }
+        leaf msg3-tran-precoding {
+            type empty;
+            description "Msg3 Transform Precoding";
+        }
+        leaf max-msg3-trans {
+            type uint8;
+            description "Max Msg3 Transmission";
+        }
+        leaf rsrp-thres-ssb {
+            type uint8 { range "0..127"; }
+            description "RSRP Threshold SSB";
+        }
+        description "RACH Common Configuration";
+    }
+
+
+    grouping ul-bwp {
+        uses bwp-gen;
+        
+        leaf sr-perd { type uint16; }
+        leaf f2-max-payload-len1 { type uint16; }
+        leaf f2-max-payload-len2 { type uint16; }
+        leaf cyc-shift-bitmap {
+            type uint16;
+            description "Cyclic Shift Bitmap";
+        }
+        
+        container rach-cfg {
+            if-feature optional;
+            uses rach-cfg;
+        }
+        description "Bandwidth Part UL Common Configuration";
+    }
+    grouping dl-bwp {
+        uses bwp-gen;
+        
+        container cs-ss-cfg {
+            leaf avg-aggr-lvl { type uint8; }
+            leaf max-aggr-lvl { type uint8; }
+            leaf mon-slot-perd { type uint8; }
+            description "Control Resource Set Search Space Configuration";
+        }
+    }
+
+
+    grouping cell-bwps {
+        list ul-bwps {
+            key bwp-id;
+            uses ul-bwp;
+        }
+        list dl-bwps {
+            key bwp-id;
+            uses dl-bwp;
+        }
+        list sul-bwps {
+            key bwp-id;
+            uses ul-bwp;
+        }
+    }
+}

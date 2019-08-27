@@ -1,7 +1,11 @@
 /*********************************************************************************
- * filename: gnb_du_oam_agent_du_ns.h 
+ * Filename: gnb_du_oam_agent_du_ns.h 
+ *
  * Description: This header file contains implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 16:31:03
+ *
+ * Generation time: 2019-08-27 09:54:29
+ *
+ * YANG file latest revision: 2019-07-08
 *********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_DU_NS__
@@ -14,50 +18,32 @@ namespace gnb_du
 namespace rcfd
 {
 
-typedef struct structNsCell
-{
-    uint8_t cell_id; 
-    bool en_res_shared; 
-    uint8_t res_id; 
-    uint8_t dl_num_ue_per_tti; 
-    uint8_t ul_num_ue_per_tti; 
-    uint16_t dl_prb; 
-    uint16_t ul_prb; 
-    uint64_t dl_sla_trgt_rate; 
-    uint64_t ul_sla_trgt_rate; 
-} NsCell;
-
 typedef struct structNsi
 {
     uint8_t nsi_id; 
     std::vector<uint16_t> cores;
-    std::vector<std::shared_ptr<NsCell>> cells;
 } Nsi;
-
-typedef struct structNs
-{
-    NsAgentTypeE agent_type; 
-    IpAddrPort local_sm; 
-    IpAddrPort remote_sm; 
-    std::vector<std::shared_ptr<Nsi>> nsis;
-} Ns;
 
 class oam_agent_rcfd_du_ns : public allocator
 {
 public:
+    NsAgentTypeE agent_type_; 
+    IpAddrPort local_sm_; 
+    IpAddrPort remote_sm_; 
+    std::vector<std::shared_ptr<Nsi>> nsis_;
 
-    void read_grp_ns_cell(XCONFD_YANGTREE_T* yt, NsCell& ns_cell);
-    void read_grp_ns(XCONFD_YANGTREE_T* yt, Ns& ns);
-    void read_grp_ns__local_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& local_sm);
-    void read_grp_ns__remote_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& remote_sm);
-    void read_grp_ns__nsis(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<Nsi>>& nsis);
+private:
+    void read_local_sm(XCONFD_YANGTREE_T* yt);
+    void read_remote_sm(XCONFD_YANGTREE_T* yt);
+    void read_nsis(XCONFD_YANGTREE_T* yt);
     void read_grp_nsi(XCONFD_YANGTREE_T* yt, Nsi& nsi);
-    void read_grp_nsi__cells(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<NsCell>>& cells);
 
 public:
     oam_agent_rcfd_du_ns(XCONFD_YANGTREE_T* yt);
     virtual ~oam_agent_rcfd_du_ns() {}
 };
+
+typedef std::shared_ptr<oam_agent_rcfd_du_ns> rcfd_du_ns_ptr;
 
 } //end of namespace rcfd
 } //end of namespace gnb_du

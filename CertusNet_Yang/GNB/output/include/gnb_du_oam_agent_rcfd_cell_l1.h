@@ -1,7 +1,11 @@
 /*********************************************************************************
- * filename: gnb_du_oam_agent_cell_l1.h 
+ * Filename: gnb_du_oam_agent_cell_l1.h 
+ *
  * Description: This header file contains implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 16:31:01
+ *
+ * Generation time: 2019-08-27 09:54:27
+ *
+ * YANG file latest revision: 2019-06-20
 *********************************************************************************/ 
 
 #ifndef __GNB_DU_OAM_AGENT_CELL_L1__
@@ -18,8 +22,8 @@ typedef struct structPlmnIdInfo
 {
     std::vector<std::shared_ptr<PlmnId>> plmn_ids;
     NrCellIdT nr_cell_id; 
-    std::shared_ptr<uint32_t> tac;
-    std::shared_ptr<uint8_t> ranac;
+    uint32_t tac; 
+    uint8_t ranac; 
     bool cell_rsrvd_for_operator_use; 
 } PlmnIdInfo;
 
@@ -34,10 +38,10 @@ typedef struct structPrach
     uint16_t root_seq_idx; 
     uint8_t cfg_idx; 
     uint8_t zero_correlation_zone_cfg; 
-    std::shared_ptr<uint8_t> restricted_set;
-    uint16_t freq_start; 
     uint8_t freq_offset; 
     ScsE scs; 
+    std::shared_ptr<RestrictedSetCfgE> restricted_set;
+    uint16_t freq_start; 
     Msg1FdmE fdm; 
     SsbPerRachOccE ssb_per_rach_occ; 
 } Prach;
@@ -55,26 +59,23 @@ typedef struct structUeTimers
 
 typedef struct structCellSelInfo
 {
-    std::shared_ptr<QRxLvlMinT> q_rx_lvl_min;
-    std::shared_ptr<uint8_t> q_rx_lvl_min_offset;
-    std::shared_ptr<QRxLvlMinT> q_rx_lvl_min_sul;
-    std::shared_ptr<QQualMinT> q_qual_min;
-    std::shared_ptr<uint8_t> q_qual_min_offset;
+    QRxLvlMinT q_rx_lvl_min; 
+    QRxLvlMinT q_rx_lvl_min_sul; 
+    QQualMinT q_qual_min; 
 } CellSelInfo;
 
 typedef struct structMib
 {
     ScsCmnE scs_cmn; 
     SsbScOffsetT ssb_sc_offset; 
+    CellBarredE cell_barred; 
+    IntraFreqReselE intra_freq_resel; 
     PdcchCfgSib1 pdcch_cfg_sib1; 
-    bool cell_barred; 
-    bool intra_freq_resel; 
 } Mib;
 
 typedef struct structCellAccessInfo
 {
     std::vector<std::shared_ptr<PlmnIdInfo>> plmn_id_infos;
-    bool cell_rsrvd_for_other_use; 
 } CellAccessInfo;
 
 typedef struct structSib1
@@ -87,13 +88,18 @@ typedef struct structSib1
 class oam_agent_rcfd_cell_l1 : public allocator
 {
 public:
-    uint32_t dl_central_freq_; 
     uint32_t ul_central_freq_; 
+    uint32_t dl_central_freq_; 
+    uint32_t ssb_pwr_; 
+    uint8_t ssb_prb_offset_; 
     uint8_t ca_lvl_; 
+    ScsCarrierK0E ul_carrier_k0_; 
+    ScsCarrierK0E dl_carrier_k0_; 
     std::shared_ptr<Prach> prach_;
     Mib mib_; 
     Sib1 sib1_; 
 
+private:
     void read_prach(XCONFD_YANGTREE_T* yt);
     void read_mib(XCONFD_YANGTREE_T* yt);
     void read_sib1(XCONFD_YANGTREE_T* yt);
@@ -115,6 +121,8 @@ public:
     oam_agent_rcfd_cell_l1(XCONFD_YANGTREE_T* yt);
     virtual ~oam_agent_rcfd_cell_l1() {}
 };
+
+typedef std::shared_ptr<oam_agent_rcfd_cell_l1> rcfd_cell_l1_ptr;
 
 } //end of namespace rcfd
 } //end of namespace gnb_du

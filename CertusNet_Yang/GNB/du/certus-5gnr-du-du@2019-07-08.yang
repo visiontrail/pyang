@@ -15,7 +15,11 @@ module certus-5gnr-du-du {
 
 
     container du {
-        container base { uses du-base; }
-        container ns { uses ns; }
+        container base {
+            uses du-base;
+        }
+        container ns {
+            uses du-ns;
+        }
     }
 }

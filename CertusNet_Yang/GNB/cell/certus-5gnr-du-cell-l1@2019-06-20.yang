@@ -19,20 +19,17 @@ submodule certus-5gnr-du-cell-l1 {
         list plmn-ids {
             key "mcc mnc";
             uses cgdcts:plmn-id;
-            min-elements 1;
+            min-elements 0;
             max-elements 6;
         }
         leaf nr-cell-id {
             type cgdcts:nr-cell-id-t;
-            must "band(., 15) = 0";
         }
         leaf tac {
-            if-feature optional;
             type uint32;
             description "Tracking Area Code";
         }
         leaf ranac {
-            if-feature optional;
             type uint8 { range "0..255"; }
             description "RAN Area Code";
         }
@@ -45,29 +42,16 @@ submodule certus-5gnr-du-cell-l1 {
     
     grouping cell-sel-info {
         leaf q-rx-lvl-min {
-            if-feature optional;
             type cgdcts:q-rx-lvl-min-t;
             description "Minimum Received RSRP Level";
         }
-        leaf q-rx-lvl-min-offset {
-            if-feature optional;
-            type uint8 { range "1..8"; }
-            description "Minimum Received RSRP Level Offset";
-        }
         leaf q-rx-lvl-min-sul {
-            if-feature optional;
             type cgdcts:q-rx-lvl-min-t;
             description "Minimum Received RSRP Level Of SUL";
         }
         leaf q-qual-min {
-            if-feature optional;
             type cgdcts:q-qual-min-t;
             description "Minimum Received RSRQ Level";
-        }
-        leaf q-qual-min-offset {
-            if-feature optional;
-            type uint8 { range "1..8"; }
-            description "Minimum Received RSRQ Level Offset";
         }
     }
     grouping cell-access-info {
@@ -75,12 +59,8 @@ submodule certus-5gnr-du-cell-l1 {
             key nr-cell-id;
             uses plmn-id-info;
             
-            min-elements 1;
+            min-elements 0;
             max-elements 6;
-        }
-        leaf cell-rsrvd-for-other-use {
-            type empty;
-            description "Cell Reserved For Other Use";
         }
     }
     grouping ue-timers {
@@ -102,19 +82,17 @@ submodule certus-5gnr-du-cell-l1 {
         leaf zero-correlation-zone-cfg {
             type uint8 { range "0..15"; }
         }
+        leaf freq-offset {
+            type uint8 { range "0..94"; }
+        }
+        leaf scs { type cgdcts:scs-e; }
         leaf restricted-set {
             if-feature optional;
-            type uint8;
+            type cgdcts:restricted-set-cfg-e;
         }
         leaf freq-start {
             type uint16 { range "0..274"; }
-            default 0;
-        }
-        leaf freq-offset {
-            type uint8 { range "0..94"; }
-            default 0;
-        }
-        leaf scs { type cgdcts:scs-e; }
+         }
         leaf fdm { type cgdcts:msg1-fdm-e; }
         leaf ssb-per-rach-occ {
             type cgdcts:ssb-per-rach-occ-e;
@@ -128,8 +106,14 @@ submodule certus-5gnr-du-cell-l1 {
         }
         leaf ssb-sc-offset {
             type cgdcts:ssb-sc-offset-t;
-            default 0;
             description "SSB Subcarrier Offset";
+        }
+        leaf cell-barred {
+            type cgdcts:cell-barred-e;
+        }
+        leaf intra-freq-resel {
+            type cgdcts:intra-freq-resel-e;
+            description "Intra Frequency Reselection";
         }
         container pdcch-cfg-sib1 {
             leaf coreset-zero {
@@ -140,11 +124,6 @@ submodule certus-5gnr-du-cell-l1 {
                 type cgdcts:ss-zero-t;
                 description "Search Space With ID #0";
             }
-        }
-        leaf cell-barred { type empty; }
-        leaf intra-freq-resel {
-            type empty;
-            description "Intra Frequency Reselection";
         }
     }
     grouping sib1 {
@@ -161,19 +140,28 @@ submodule certus-5gnr-du-cell-l1 {
     
     
     grouping cell-l1 {
-        leaf dl-central-freq {
-            type uint32;
-            description "DL Central Frequency";
-        }
         leaf ul-central-freq {
             type uint32;
             description "UL Central Frequency";
         }
+        leaf dl-central-freq {
+            type uint32;
+            description "DL Central Frequency";
+        }
+        leaf ssb-pwr {
+            type uint32;
+            description "SSB Power";
+        }
+        leaf ssb-prb-offset {
+            type uint8;
+            description "SSB PRB Offset";
+        }
         leaf ca-lvl {
             type uint8;
-            default 0;
             description "Cell Aggregation Level";
         }
+        leaf ul-carrier-k0 { type cgdcts:scs-carrier-k0-e; }
+        leaf dl-carrier-k0 { type cgdcts:scs-carrier-k0-e; }
         container prach {
             if-feature optional;
             uses prach;

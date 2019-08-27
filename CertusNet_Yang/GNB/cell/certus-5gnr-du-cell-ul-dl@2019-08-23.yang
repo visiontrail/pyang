@@ -1,0 +1,132 @@
+submodule certus-5gnr-du-cell-ul-dl {
+    belongs-to certus-5gnr-du-cells {
+        prefix cgdcs;
+    }
+    
+    import certus-5gnr-du-cell-types {
+        prefix cgdcts;
+        revision-date 2019-06-20;
+    }
+
+    organization "CertusNet";
+    description "This module defines du cell ul&dl configuration.";
+    
+    revision 2019-08-23 {
+        description  "Initial revision.";
+    }
+
+
+    grouping scs-spec-carrier {
+        leaf scs {
+            type cgdcts:scs-e;
+            description "Subcarrier Spacing";
+        }
+        leaf offset-to-carrier {
+            type cgdcts:offset-point-a-carrier-t;
+            description "Offset To Carrier";
+        }
+    }
+    
+    
+    grouping freq-info-cmn {
+        leaf abs-freq-point-a {
+            type uint32;
+            description "Absolute Frequency PointA";
+        }
+        leaf abs-arfcn-point-a {
+            type cgdcts:arfcn-t;
+            description "Absolute ARFCN PointA";
+        }
+        leaf nr-arfcn {
+            type cgdcts:arfcn-t;
+            description "NR ARFCN";
+        }
+        leaf channel-bw {
+            type cgdcts:channel-bw-e;
+            description "Channel Bandwidth";
+        }
+        leaf-list nr-freq-bands {
+            type uint16 { range "1..1024"; }
+            max-elements 8;
+            description "NR Frequency Bands";
+        }
+        list scs-spec-carriers {
+            key "scs";
+            uses scs-spec-carrier;
+            min-elements 0;
+            max-elements 5;
+            description "Subcarrier Spacing Specific Carrier List";
+        }
+    }
+    
+
+    grouping ul-freq {
+        container freq-info-cmn {
+            uses freq-info-cmn;
+        }
+        leaf addtl-spectrum-emi {
+            type uint8 { range "0..7"; }
+            description "Additional Spectrum Emission";
+        }
+        leaf p-max {
+            type int8 { range "-30..33"; }
+            description "Max Transmit Power";
+        }
+        leaf freq-shift-7p5khz {
+            type empty;
+            description "Shift With 7.5kHz To LTE Raster";
+        }
+    }
+    grouping dl-freq {
+        container freq-info-cmn {
+            uses freq-info-cmn;
+        }
+        leaf abs-freq-ssb {
+            type uint32;
+            description "Absolute Frequency Of The SSB";
+        }
+        leaf abs-arfcn-ssb {
+            type cgdcts:arfcn-t;
+            description "Absolute ARFCN Of The SSB";
+        }
+    }
+    grouping sul {
+        leaf max-ue-per-tti {
+            type uint32;
+            description "Max Ue Number Per UL TTI";
+        }
+        leaf ccch-cqi { type uint8; }
+        leaf tar-cqi {
+            if-feature optional;
+            type uint8 { range "1..15"; }
+            description "Target UL CQI";
+        }
+        leaf harmonic {
+            type empty;
+            description "Harmonic Enabled";
+        }
+        leaf freq-muted {
+            type empty;
+            description "Frequency Muted";
+        }
+        container freq-info {
+            if-feature optional;
+            uses ul-freq;
+        }
+    }
+
+    
+    grouping cell-ul-dl {
+        container ul-freq {
+            if-feature optional;
+            uses ul-freq;
+        }
+        container dl-freq {
+            uses dl-freq;
+        }
+        container sul {
+            if-feature optional;
+            uses sul;
+        }
+    }
+}

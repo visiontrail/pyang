@@ -1,7 +1,11 @@
 /*********************************************************************************
  * Filename: gnb_du_oam_agent_rcfd_du_ns.cpp 
+ *
  * Description: This file implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 16:31:03
+ *
+ * Generation time: 2019-08-27 09:54:29
+ *
+ * YANG file latest revision: 2019-07-08
 *********************************************************************************/ 
 
 #include "gnb_du_oam_agent_rcfd_du_ns.h" 
@@ -13,49 +17,32 @@ namespace rcfd
 
 oam_agent_rcfd_du_ns::oam_agent_rcfd_du_ns(XCONFD_YANGTREE_T* yt)
 {
-}
-
-void oam_agent_rcfd_du_ns::read_grp_ns_cell(XCONFD_YANGTREE_T* yt, NsCell& ns_cell)
-{
-    xconfd_get(ns_cell.cell_id, uint8, "cell-id", yt);
-    xconfd_get_empty_value(ns_cell.en_res_shared, "en-res-shared", yt);
-    xconfd_get(ns_cell.res_id, uint8, "res-id", yt);
-    xconfd_get(ns_cell.dl_num_ue_per_tti, uint8, "dl-num-ue-per-tti", yt);
-    xconfd_get(ns_cell.ul_num_ue_per_tti, uint8, "ul-num-ue-per-tti", yt);
-    xconfd_get(ns_cell.dl_prb, uint16, "dl-prb", yt);
-    xconfd_get(ns_cell.ul_prb, uint16, "ul-prb", yt);
-    xconfd_get(ns_cell.dl_sla_trgt_rate, uint64, "dl-sla-trgt-rate", yt);
-    xconfd_get(ns_cell.ul_sla_trgt_rate, uint64, "ul-sla-trgt-rate", yt);
-}
-
-void oam_agent_rcfd_du_ns::read_grp_ns(XCONFD_YANGTREE_T* yt, Ns& ns)
-{
-    xconfd_get(ns.agent_type, enum, "agent-type", yt);
+    xconfd_get(agent_type_, enum, "agent-type", yt);
     auto local_sm_yt = xconfd_yang_tree_get_node(yt, "local-sm");
-    read_grp_ns__local_sm(local_sm_yt, ns.local_sm);
+    read_local_sm(local_sm_yt);
     auto remote_sm_yt = xconfd_yang_tree_get_node(yt, "remote-sm");
-    read_grp_ns__remote_sm(remote_sm_yt, ns.remote_sm);
+    read_remote_sm(remote_sm_yt);
     auto nsis_yt = xconfd_yang_tree_get_node(yt, "nsis");
-    read_grp_ns__nsis(nsis_yt, ns.nsis);
+    read_nsis(nsis_yt);
 }
 
-void oam_agent_rcfd_du_ns::read_grp_ns__local_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& local_sm)
+void oam_agent_rcfd_du_ns::read_local_sm(XCONFD_YANGTREE_T* yt)
 {
-    read_grp_ip_addr_port(yt, local_sm);
+    read_grp_ip_addr_port(yt, local_sm_);
 }
 
-void oam_agent_rcfd_du_ns::read_grp_ns__remote_sm(XCONFD_YANGTREE_T* yt, IpAddrPort& remote_sm)
+void oam_agent_rcfd_du_ns::read_remote_sm(XCONFD_YANGTREE_T* yt)
 {
-    read_grp_ip_addr_port(yt, remote_sm);
+    read_grp_ip_addr_port(yt, remote_sm_);
 }
 
-void oam_agent_rcfd_du_ns::read_grp_ns__nsis(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<Nsi>>& nsis)
+void oam_agent_rcfd_du_ns::read_nsis(XCONFD_YANGTREE_T* yt)
 {
     XCONFD_YANG_TREE_LIST_FOREACH(yt, nsi_yt)
     {
         auto nsi = std::make_shared<Nsi>();
         read_grp_nsi(nsi_yt, *nsi);
-        nsis.push_back(nsi);
+        nsis_.push_back(nsi);
     }
 }
 
@@ -63,18 +50,6 @@ void oam_agent_rcfd_du_ns::read_grp_nsi(XCONFD_YANGTREE_T* yt, Nsi& nsi)
 {
     xconfd_get(nsi.nsi_id, uint8, "nsi-id", yt);
     xconfd_yang_tree_get_leaf_list(nsi.cores, uint16, "cores", yt);
-    auto cells_yt = xconfd_yang_tree_get_node(yt, "cells");
-    read_grp_nsi__cells(cells_yt, nsi.cells);
-}
-
-void oam_agent_rcfd_du_ns::read_grp_nsi__cells(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<NsCell>>& cells)
-{
-    XCONFD_YANG_TREE_LIST_FOREACH(yt, ns_cell_yt)
-    {
-        auto ns_cell = std::make_shared<NsCell>();
-        read_grp_ns_cell(ns_cell_yt, *ns_cell);
-        cells.push_back(ns_cell);
-    }
 }
 
 

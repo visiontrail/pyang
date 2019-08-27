@@ -25,6 +25,8 @@ submodule certus-5gnr-du-cell-base {
             description "Slice Differentiator";
         }
     }
+
+
     grouping served-plmn {
         uses cgdcts:plmn-id;
         list s-nssais {
@@ -34,29 +36,39 @@ submodule certus-5gnr-du-cell-base {
             description "Single Network Slice Selection Assistance Information";
         }
     }
-    
+    grouping pcch {
+        leaf default-paging-cycle {
+            type cgdcts:paging-cycle-e;
+        }
+        leaf paging-frame-offset-type {
+            type cgdcts:paging-frame-offset-type-e;
+        }
+        leaf paging-frame-offset {
+            type uint8 { range "0..15"; }
+            description "Total Paging Frames And Paging Frame Offset";
+        }
+        leaf ns {
+            type cgdcts:ns-e;
+            description "Number Of Paging Occasions Per Paging Frame";
+        }
+        leaf f-pdcch-mon-occ-of-po-present {
+            type empty;
+            description "First PDCCH Monitoring Occasion For Paging Of Each PO";
+        }
+    }
+
 
     grouping cell-base {
-        leaf nr-mode-type { type cgdcts:nr-mode-type-e; }
-        container nr-cgi {
-            uses cgdcts:plmn-id;
-            leaf nr-cell-id {
-                type cgdcts:nr-cell-id-t;
-                must "band(., 15) = 0";
-            }
-            description "NR Cell Global Identifier";
-        }
         leaf nr-pci {
             type cgdcts:nr-pci-t;
             description "NR Physical Cell ID (0..1007)";
         }
-        leaf tac-5gs {
-            type cgdcts:tac-5gs-t;
-            description "5GS Tracking Area Code";
-        }
-        leaf cfgrd-eps-tac {
-            type cgdcts:cfgrd-eps-tac-t;
-            description "Configured EPS TAC";
+        container nr-cgi {
+            uses cgdcts:plmn-id;
+            leaf nr-cell-id {
+                type cgdcts:nr-cell-id-t;
+            }
+            description "NR Cell Global Identifier";
         }
         list served-plmns {
             key "mcc mnc";
@@ -64,16 +76,70 @@ submodule certus-5gnr-du-cell-base {
             min-elements 0;
             max-elements 6;
         }
-        container si-perd {
-            leaf sib2-perd {
-                if-feature optional;
-                type cgdcts:si-perd-e;
-            }
-            leaf sib3-perd {
-                if-feature optional;
-                type cgdcts:si-perd-e;
-            }
-            description "SI Periodicity";
+        leaf nr-mode-type { type cgdcts:nr-mode-type-e; }
+        leaf scs {
+            type cgdcts:scs-e;
+            description "Subcarrier Spacing";
         }
+        leaf slot-format {
+            type uint8 { range "0..6"; }
+        }
+        leaf max-ue-per-ul-tti {
+            type uint32;
+            description "Max Ue Number Per UL TTI";
+        }
+        leaf max-ue-per-dl-tti {
+            type uint32;
+            description "Max Ue Number Per DL TTI";
+        }
+        leaf max-dl-harq-tx {
+            type uint8;
+            description "Max DL Harq TX Number";
+        }
+        leaf max-msg4-harq-tx {
+            type uint32;
+            description "Max Msg4 Harq TX Number";
+        }
+        leaf cfi {
+            type uint32;
+            description "Control Format Indicator";
+        }
+        container preamble-id-range {
+            leaf start { type uint16; }
+            leaf size { type uint16; }
+            description "Preamble ID Range";
+        }
+        leaf cp-ul-extended {
+            type empty;
+            description "Cyclic Prefix UL Extended";
+        }
+        leaf dmrs-type-a-pos {
+            type cgdcts:dmrs-type-a-pos-e;
+            description "DMRS TypeA Position";
+        }
+        leaf csi-perd { type uint16; }
+        leaf tac-5gs {
+            type cgdcts:tac-5gs-t;
+            description "5GS Tracking Area Code";
+        }
+        leaf sib2-perd {
+            if-feature optional;
+            type cgdcts:si-perd-e;
+        }
+        leaf sib3-perd {
+            if-feature optional;
+            type cgdcts:si-perd-e;
+        }
+        leaf bcch-pcch-mcs {
+            type uint8;
+            description "BCCH&PCCH Modulation Code Scheme";
+        }
+        leaf rar-mcs {
+            type uint8;
+            description "RAR Modulation Code Scheme";
+        }
+        leaf ul-ccch-cqi { type uint8; }
+        leaf dl-ccch-cqi { type uint8; }
+        container pcch { uses pcch; }
     }
 }

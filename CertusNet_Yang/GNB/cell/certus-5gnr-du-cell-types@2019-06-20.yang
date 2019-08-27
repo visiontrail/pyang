@@ -41,7 +41,7 @@ module certus-5gnr-du-cell-types {
     }
     
     typedef nr-cell-id-t {
-        type uint64 { range "0..1099511627760"; } // BIT STRING (36)
+        type uint64 { range "0..68719476735"; } // BIT STRING (36)
     }
 
     typedef nr-pci-t {
@@ -79,6 +79,14 @@ module certus-5gnr-du-cell-types {
             enum SI-RF512;
         }
         description "Radio Frame Number";
+    }
+    
+    typedef restricted-set-cfg-e {
+        type enumeration {
+            enum UNRESTRICTED;
+            enum RESTRICTED-TYPEA;
+            enum RESTRICTED-TYPEB;
+        }
     }
 
     typedef scs-e {
@@ -255,19 +263,6 @@ module certus-5gnr-du-cell-types {
         }
     }
     
-    typedef msg-power-offset-grp-b-e {
-        type enumeration {
-            enum OFFSET-MINUS-INFINITY;
-            enum OFFSET-DB0;
-            enum OFFSET-DB5;
-            enum OFFSET-DB8;
-            enum OFFSET-DB10;
-            enum OFFSET-DB12;
-            enum OFFSET-DB15;
-            enum OFFSET-DB18;
-        }
-    }
-
     typedef ra-cont-res-tmr-e {
         type enumeration {
             enum CONT-SF8;
@@ -408,6 +403,20 @@ module certus-5gnr-du-cell-types {
     typedef ss-zero-t {
         type uint8 { range "0..15"; }
         description "Type Of Search Space With ID #0";
+    }
+    
+    typedef cell-barred-e {
+        type enumeration {
+            enum BARRED;
+            enum NOT-BARRED;
+        }
+    }
+    
+    typedef intra-freq-resel-e {
+        type enumeration {
+            enum ALLOWED;
+            enum NOT-ALLOWED;
+        }
     }
 
     typedef ssb-sc-offset-t {
@@ -678,6 +687,32 @@ module certus-5gnr-du-cell-types {
             enum HARQ-PROC-N10;
             enum HARQ-PROC-N12;
             enum HARQ-PROC-N16;
+        }
+    }
+
+    typedef rach-preamble-format-e {
+        type enumeration {
+            enum RACH-PREAMBLE-FORMAT-0;
+            enum RACH-PREAMBLE-FORMAT-1;
+            enum RACH-PREAMBLE-FORMAT-2;
+            enum RACH-PREAMBLE-FORMAT-3;
+            enum RACH-PREAMBLE-FORMAT-A1;
+            enum RACH-PREAMBLE-FORMAT-A2;
+            enum RACH-PREAMBLE-FORMAT-A3;
+            enum RACH-PREAMBLE-FORMAT-B1;
+            enum RACH-PREAMBLE-FORMAT-B2;
+            enum RACH-PREAMBLE-FORMAT-B3;
+            enum RACH-PREAMBLE-FORMAT-B4;
+            enum RACH-PREAMBLE-FORMAT-C0;
+            enum RACH-PREAMBLE-FORMAT-C2;
+        }
+    }
+
+    typedef scs-carrier-k0-e {
+        type enumeration {
+            enum CARRIER-K0-N0-MINUS-6;
+            enum CARRIER-K0-N0;
+            enum CARRIER-K0-N0-PLUS-6;
         }
     }
     

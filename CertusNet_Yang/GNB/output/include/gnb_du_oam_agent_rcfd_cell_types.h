@@ -3,7 +3,7 @@
  *
  * Description: This header file contains implementation of OAM Agent RConfD.
  *
- * Generation time: 2019-08-24 15:09:53
+ * Generation time: 2019-08-27 09:54:28
  *
  * YANG file latest revision: 2019-06-20
 *********************************************************************************/ 
@@ -107,23 +107,18 @@ typedef enum enumInterlvrSizeE
     INTERLVR_N6
 } InterlvrSizeE;
 
-typedef enum enumMsgPowerOffsetGrpBE
-{
-    OFFSET_MINUS_INFINITY,
-    OFFSET_DB0,
-    OFFSET_DB5,
-    OFFSET_DB8,
-    OFFSET_DB10,
-    OFFSET_DB12,
-    OFFSET_DB15,
-    OFFSET_DB18
-} MsgPowerOffsetGrpBE;
-
 typedef enum enumHarqAckCbTypeE
 {
     CB_SS,
     CB_DYN
 } HarqAckCbTypeE;
+
+typedef enum enumScsCarrierK0E
+{
+    CARRIER_K0_N0_MINUS_6,
+    CARRIER_K0_N0,
+    CARRIER_K0_N0_PLUS_6
+} ScsCarrierK0E;
 
 typedef enum enumPrachRootSeqIdxTypeE
 {
@@ -208,6 +203,23 @@ typedef enum enumN310E
     N310_N10,
     N310_N20
 } N310E;
+
+typedef enum enumRachPreambleFormatE
+{
+    RACH_PREAMBLE_FORMAT_0,
+    RACH_PREAMBLE_FORMAT_1,
+    RACH_PREAMBLE_FORMAT_2,
+    RACH_PREAMBLE_FORMAT_3,
+    RACH_PREAMBLE_FORMAT_A1,
+    RACH_PREAMBLE_FORMAT_A2,
+    RACH_PREAMBLE_FORMAT_A3,
+    RACH_PREAMBLE_FORMAT_B1,
+    RACH_PREAMBLE_FORMAT_B2,
+    RACH_PREAMBLE_FORMAT_B3,
+    RACH_PREAMBLE_FORMAT_B4,
+    RACH_PREAMBLE_FORMAT_C0,
+    RACH_PREAMBLE_FORMAT_C2
+} RachPreambleFormatE;
 
 typedef enum enumDciFormatE
 {
@@ -311,6 +323,12 @@ typedef enum enumPreambleTransMaxE
     TRANS_N100,
     TRANS_N200
 } PreambleTransMaxE;
+
+typedef enum enumIntraFreqReselE
+{
+    ALLOWED,
+    NOT_ALLOWED
+} IntraFreqReselE;
 
 typedef uint8_t SsIdT;
 
@@ -452,6 +470,12 @@ typedef enum enumDmrsTypeAPosE
     DMRS_POS3
 } DmrsTypeAPosE;
 
+typedef enum enumCellBarredE
+{
+    BARRED,
+    NOT_BARRED
+} CellBarredE;
+
 typedef enum enumCandidatesNumE
 {
     CANDIDATE_N0,
@@ -551,4 +575,55 @@ typedef uint8_t TciStateIdT;
 
 typedef uint8_t CoresetZeroT;
 
-typedef enum enumMax
+typedef enum enumMaxCbgsPerTbE
+{
+    CBGS_N2,
+    CBGS_N4,
+    CBGS_N6,
+    CBGS_N8
+} MaxCbgsPerTbE;
+
+typedef enum enumRaMsg3SizeGrpAE
+{
+    RA_B56,
+    RA_B144,
+    RA_B208,
+    RA_B256,
+    RA_B282,
+    RA_B480,
+    RA_B640,
+    RA_B800,
+    RA_B1000,
+    RA_B72,
+    RA_SPARE6,
+    RA_SPARE5,
+    RA_SPARE4,
+    RA_SPARE3,
+    RA_SPARE2,
+    RA_SPARE1
+} RaMsg3SizeGrpAE;
+
+typedef uint32_t SdT;
+
+typedef enum enumTransPerdV1530E
+{
+    TRANS_MS3_V1530,
+    TRANS_MS4_V1530
+} TransPerdV1530E;
+
+typedef enum enumRestrictedSetCfgE
+{
+    UNRESTRICTED,
+    RESTRICTED_TYPEA,
+    RESTRICTED_TYPEB
+} RestrictedSetCfgE;
+
+typedef struct structPlmnId
+{
+    std::string mcc; 
+    std::string mnc; 
+} PlmnId;
+void read_grp_plmn_id(XCONFD_YANGTREE_T* yt, PlmnId& plmn_id);
+} //end of namespace rcfd
+} //end of namespace gnb_du
+#endif

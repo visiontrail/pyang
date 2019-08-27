@@ -1,7 +1,11 @@
 /*********************************************************************************
  * Filename: gnb_du_oam_agent_rcfd_du_base.cpp 
+ *
  * Description: This file implementation of OAM Agent RConfD.
- * Generation time: 2019-07-20 16:31:04
+ *
+ * Generation time: 2019-08-27 09:54:29
+ *
+ * YANG file latest revision: 2019-07-08
 *********************************************************************************/ 
 
 #include "gnb_du_oam_agent_rcfd_du_base.h" 
@@ -32,7 +36,7 @@ oam_agent_rcfd_du_base::oam_agent_rcfd_du_base(XCONFD_YANGTREE_T* yt)
 
 void oam_agent_rcfd_du_base::read_ue(XCONFD_YANGTREE_T* yt)
 {
-    xconfd_get(ue_.max_ue_supported, uint16, "max-ue-supported", yt);
+    xconfd_get(ue_.max_num_ues, uint16, "max-num-ues", yt);
     xconfd_get(ue_.rnti_start, uint16, "rnti-start", yt);
     xconfd_get(ue_.max_num_rnti, uint16, "max-num-rnti", yt);
 }
@@ -55,8 +59,7 @@ void oam_agent_rcfd_du_base::read_f1u_flow_ctrl(XCONFD_YANGTREE_T* yt)
     xconfd_get(f1u_flow_ctrl_.rlc_sdu_q_lwr_thr, uint16, "rlc-sdu-q-lwr-thr", yt);
     xconfd_get(f1u_flow_ctrl_.rlc_sdu_q_upr_thr, uint16, "rlc-sdu-q-upr-thr", yt);
     xconfd_get(f1u_flow_ctrl_.nrup_flw_ctrl_tmr, uint16, "nrup-flw-ctrl-tmr", yt);
-    xconfd_get_empty_value(f1u_flow_ctrl_.en_nrup_missing_rept, "en-nrup-missing-rept", yt);
-    xconfd_get(f1u_flow_ctrl_.read_ingress_pkts_per_tti, uint32, "read-ingress-pkts-per-tti", yt);
+    xconfd_get(f1u_flow_ctrl_.ingress_pkt_read_per_tti, uint8, "ingress-pkt-read-per-tti", yt);
 }
 
 void oam_agent_rcfd_du_base::read_drx(XCONFD_YANGTREE_T* yt)
@@ -72,14 +75,39 @@ void oam_agent_rcfd_du_base::read_log(XCONFD_YANGTREE_T* yt)
     read_grp_log(yt, log_);
 }
 
+void oam_agent_rcfd_du_base::read_grp_rlog(XCONFD_YANGTREE_T* yt, Rlog& rlog)
+{
+    xconfd_get(rlog.rlog_path, string, "rlog-path", yt);
+    xconfd_get(rlog.rlog_file_name, string, "rlog-file-name", yt);
+    xconfd_get(rlog.init_log, uint8, "init-log", yt);
+    xconfd_get(rlog.module_mask, uint32, "module-mask", yt);
+    xconfd_get(rlog.num_of_rlog_files, uint8, "num-of-rlog-files", yt);
+    xconfd_get(rlog.rlog_file_size_lmt, uint32, "rlog-file-size-lmt", yt);
+    xconfd_get(rlog.rlog_level, enum, "rlog-level", yt);
+}
+
 void oam_agent_rcfd_du_base::read_grp_drx(XCONFD_YANGTREE_T* yt, Drx& drx)
 {
+    xconfd_get_optional(drx.drx_on_duration_tmr, uint32_t, uint32, "drx-on-duration-tmr", yt);
     xconfd_get(drx.inactivity_tmr, uint32, "inactivity-tmr", yt);
-    xconfd_get(drx.retx_tmr_dl, uint32, "retx-tmr-dl", yt);
+    xconfd_get(drx.drx_rtt_tmr_ul, uint8, "drx-rtt-tmr-ul", yt);
+    xconfd_get(drx.drx_rtt_tmr_dl, uint8, "drx-rtt-tmr-dl", yt);
     xconfd_get(drx.retx_tmr_ul, uint32, "retx-tmr-ul", yt);
+    xconfd_get(drx.retx_tmr_dl, uint32, "retx-tmr-dl", yt);
     xconfd_get(drx.long_cycle, uint32, "long-cycle", yt);
-    xconfd_get(drx.short_cycle, uint32, "short-cycle", yt);
-    xconfd_get(drx.short_cycle_tmr, uint32, "short-cycle-tmr", yt);
+    xconfd_get(drx.drx_cycle_start_offset, uint32, "drx-cycle-start-offset", yt);
+    auto short_cycle_yt = xconfd_yang_tree_get_node(yt, "short-cycle");
+    read_grp_drx__short_cycle(short_cycle_yt, drx.short_cycle);
+    xconfd_get(drx.drx_slot_offset, uint32, "drx-slot-offset", yt);
+}
+
+void oam_agent_rcfd_du_base::read_grp_drx__short_cycle(XCONFD_YANGTREE_T* yt, std::shared_ptr<ShortCycle>& short_cycle)
+{
+    if (!yt) return;
+    short_cycle = std::make_shared<ShortCycle>();
+
+    xconfd_get(short_cycle->short_cycle_tm, uint32, "short-cycle-tm", yt);
+    xconfd_get(short_cycle->short_cycle_tmr, uint32, "short-cycle-tmr", yt);
 }
 
 void oam_agent_rcfd_du_base::read_grp_ngp_module_log(XCONFD_YANGTREE_T* yt, NgpModuleLog& ngp_module_log)
@@ -95,6 +123,8 @@ void oam_agent_rcfd_du_base::read_grp_log(XCONFD_YANGTREE_T* yt, Log& log)
     read_grp_log__du_modules(du_modules_yt, log.du_modules);
     auto ngp_modules_yt = xconfd_yang_tree_get_node(yt, "ngp-modules");
     read_grp_log__ngp_modules(ngp_modules_yt, log.ngp_modules);
+    auto rlog_yt = xconfd_yang_tree_get_node(yt, "rlog");
+    read_grp_log__rlog(rlog_yt, log.rlog);
 }
 
 void oam_agent_rcfd_du_base::read_grp_log__du_modules(XCONFD_YANGTREE_T* yt, std::vector<std::shared_ptr<DuModuleLog>>& du_modules)
@@ -115,6 +145,17 @@ void oam_agent_rcfd_du_base::read_grp_log__ngp_modules(XCONFD_YANGTREE_T* yt, st
         read_grp_ngp_module_log(ngp_module_log_yt, *ngp_module_log);
         ngp_modules.push_back(ngp_module_log);
     }
+}
+
+void oam_agent_rcfd_du_base::read_grp_log__rlog(XCONFD_YANGTREE_T* yt, Rlog& rlog)
+{
+    read_grp_rlog(yt, rlog);
+}
+
+void oam_agent_rcfd_du_base::read_grp_du_module_log(XCONFD_YANGTREE_T* yt, DuModuleLog& du_module_log)
+{
+    xconfd_get(du_module_log.module_id, enum, "module-id", yt);
+    xconfd_get(du_module_log.log_lvl, enum, "log-lvl", yt);
 }
 
 void oam_agent_rcfd_du_base::read_grp_sctp(XCONFD_YANGTREE_T* yt, Sctp& sctp)
@@ -144,12 +185,6 @@ void oam_agent_rcfd_du_base::read_grp_sctp__cfg_params(XCONFD_YANGTREE_T* yt, Cf
     xconfd_get(cfg_params.max_init_attempts, uint16, "max-init-attempts", yt);
     xconfd_get(cfg_params.hb_interval, uint16, "hb-interval", yt);
     xconfd_get(cfg_params.max_path_retx, uint16, "max-path-retx", yt);
-}
-
-void oam_agent_rcfd_du_base::read_grp_du_module_log(XCONFD_YANGTREE_T* yt, DuModuleLog& du_module_log)
-{
-    xconfd_get(du_module_log.module_id, enum, "module-id", yt);
-    xconfd_get(du_module_log.log_lvl, enum, "log-lvl", yt);
 }
 
 

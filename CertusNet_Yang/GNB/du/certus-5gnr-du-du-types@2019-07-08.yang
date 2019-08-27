@@ -75,16 +75,43 @@ module certus-5gnr-du-du-types {
             enum LL-TRACE;
         }
     }
-    
+    typedef rlog-lvl-e {
+        type enumeration {
+            enum L_ALWAYS;
+            enum L_FATAL;
+            enum L_ERROR;
+            enum L_WARNING;
+            enum L_EVENT;
+            enum L_INFO;
+            enum L_DEBUG;
+            enum L_UNUSED;
+            enum L_MAX_LOG_LEVEL;
+        }
+    }
+
     grouping ip-addr {
         leaf ip-version { type ip-version-e; }
         leaf ipv4-addr {
             if-feature optional;
-            type inet:ipv4-address;
+            type string {
+                pattern
+                    '(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}'
+                    +  '([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])'
+                    + '(%[\p{N}\p{L}]+)?';
+            }
         }
         leaf ipv6-addr {
             if-feature optional;
-            type inet:ipv6-address;
+            type string {
+                pattern '((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}'
+                    + '((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|'
+                    + '(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}'
+                    + '(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))'
+                    + '(%[\p{N}\p{L}]+)?';
+                pattern '(([^:]+:){6}(([^:]+:[^:]+)|(.*\..*)))|'
+                    + '((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)'
+                    + '(%.+)?';
+            }
         }
     }
     
